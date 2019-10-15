@@ -73,4 +73,15 @@ describe('string comments', () => {
             expect(result[1].value).to.equal(string_example);
         }
     })
+    it('should allow same string start as escape', () => {
+        const STRING_TT = new TokenType(
+            'string',
+            getStringRegexp(DefaultTokenizerConfig.STRING_TYPES))
+        const string_example = '"capture"" the full string"'
+        const result = STRING_TT.eatToken(string_example)
+        expect(result[1]).not.undefined
+        if (result[1]) {
+            expect(result[1].value).to.equal(string_example);
+        }
+    })
 })

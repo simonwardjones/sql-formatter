@@ -40,9 +40,10 @@ export function getStringRegexp(stringTypes: string[]): RegExp {
     const allStringTypes = stringTypes.map(x => {
         return ('^' + escapeRegExp(x) +
             '[^' + escapeRegExp(x) + '\\\\]*' +
-            '(?:\\\\.[^' + escapeRegExp(x) + '\\\\]*)*' +
+            '(?:(\\\\.|' + escapeRegExp(x).repeat(2) +')[^' + escapeRegExp(x) + '\\\\]*)*' +
             escapeRegExp(x))
     }).join('|')
+    // console.log(allStringTypes)
     const string_regexp =  new RegExp(allStringTypes, 'i')
     return string_regexp
 }
@@ -120,20 +121,9 @@ export class Tokenizer {
 var divideBy = "#"
 console.log('debugging' + '\n' + divideBy.repeat(40) + '\n')
 
-// var x: string[] = ['simon', 'simon2']
-// console.log(regexpFromWords(x))
-
-// console.log()
-// var l = new RegExp(`^(${wordRegexp}(\.${wordRegexp})+)`,'i')
-// console.log(l)
-// var matches = 's.im.on'.match(l)
-// if (matches) {
-// console.log(matches)
-// }
 
 console.log('Tokens:')
 var demoTokenizer = new Tokenizer(DefaultTokenizerConfig)
-console.log('Tokens:')
 console.log(demoTokenizer.tokens)
 const sqlExample = `
 select T.column1 as col, 
