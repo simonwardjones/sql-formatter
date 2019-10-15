@@ -4,6 +4,16 @@
     "typescript": "^3.6.4"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.144"
+    "@types/chai": "^4.2.3",
+    "@types/lodash": "^4.14.144",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.1",
+    "ts-node": "^8.4.1"
+  },
+  "scripts": {
+    "test": "mocha -r ts-node/register test/**.test.ts",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json"
   }
 }

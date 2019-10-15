@@ -40,7 +40,7 @@ export function getStringRegexp(stringTypes: string[]): RegExp {
     const allStringTypes = stringTypes.map(x => {
         return ('^' + escapeRegExp(x) +
             '[^' + escapeRegExp(x) + '\\\\]*' +
-            '(?:\\\\+.[^' + escapeRegExp(x) + '\\\\]*)*' +
+            '(?:\\\\.[^' + escapeRegExp(x) + '\\\\]*)*' +
             escapeRegExp(x))
     }).join('|')
     const string_regexp =  new RegExp(allStringTypes, 'i')
