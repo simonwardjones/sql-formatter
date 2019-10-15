@@ -1,12 +1,13 @@
 const world = '🦓';
-import { TokenTypes } from './tokenizer'
+import { DefaultTokenizerConfig } from './tokenizer_config'
+import { Tokenizer } from './tokenizer'
 
 export function hello(word: string = world): string {
   return `Hello ${world}! `;
 }
 
 console.log('Hello from ts, listing token kinds')
-TokenTypes.forEach(x => console.log(x.kind))
+new Tokenizer(DefaultTokenizerConfig).tokenTypes.forEach(x => console.log(x.kind))
 
 function addExampleToBody(): void {
   const sqlExample = `
