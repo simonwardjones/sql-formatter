@@ -1,7 +1,15 @@
 export interface TokenizerConfig {
     ONE_LINE_COMMENT_SYMBOLS: string[]
-    STRING_TYPES: string[]
+    STRING_TYPES: stringType[]
     RESERVED_WORDS: string[]
+}
+
+export interface stringType {
+    start: string
+    end: string
+    greedy?: boolean
+    escapes?: string[],
+    endEscapeEnd?: boolean // whether the end of the string can escape itself
 }
 
 export const DefaultTokenizerConfig: TokenizerConfig = {
@@ -9,7 +17,10 @@ export const DefaultTokenizerConfig: TokenizerConfig = {
         '--',
         '//'
     ],
-    STRING_TYPES: ["'", '"', '$$'],
+    STRING_TYPES: [
+        { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true, greedy:true },
+        { start: '"', end: '"', escapes: ['\\'] }, // move this to the indentifiers
+        { start: '$$', end: '$$'}],
     RESERVED_WORDS: [
         "all",  // ansi reserved words
         "alter",
