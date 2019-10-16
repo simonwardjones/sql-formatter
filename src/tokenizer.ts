@@ -28,16 +28,18 @@ export class TokenType {
 }
 
 export function regexpFromWords(words: string[]): RegExp {
-    return RegExp('^(' + words.join('|') + ')','i')
+    return RegExp('^(' + words.join('|') + ')', 'i')
 }
 export function oneLineComments(starters: string[]) {
     return new RegExp('^(' + starters.join('|') + ').*', 'i')
 }
 
 export const wordRegexp = /[\w_][\w$_]*/i
-export const identifierRegexpPart = getStringRegexp({start:'"',end:'"'})
+export const startWordRegexp = /^[\w_][\w$_]*/i
+
+export const identifierRegexpPart = getStringRegexp({ start: '"', end: '"' })
 export const identifierRegexp = new RegExp(
-    '(' + identifierRegexpPart.source + '|' + wordRegexp.source + ')\\.' + 
+    '(' + identifierRegexpPart.source + '|^' + wordRegexp.source + ')\\.' +
     '(' + identifierRegexpPart.source + '|' + wordRegexp.source + ')*',
     'i')
 
@@ -82,7 +84,7 @@ export function getStringsRegexp(stringTypes: stringType[]): RegExp {
         return getStringRegexp(stringType).source
     }).join('|')
     // console.log(allStringTypes)
-    const string_regexp = new RegExp(allStringTypes,'i')
+    const string_regexp = new RegExp(allStringTypes, 'i')
     return string_regexp
 }
 
@@ -102,9 +104,9 @@ export class Tokenizer {
         const STRING_TT = new TokenType('string', getStringsRegexp(config.STRING_TYPES))
         const NUMERIC_TT = new TokenType('numeric', numericRegexp)
         const RESERVED_WORDS_TT = new TokenType('reserved_words', regexpFromWords(config.RESERVED_WORDS))
-        const IDENTIFIER_TT = new TokenType('identifier',identifierRegexp)
+        const IDENTIFIER_TT = new TokenType('identifier', identifierRegexp)
         const OPERATOR_TT = new TokenType('operator', /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|\.)/)
-        const WORD_TT = new TokenType('word',wordRegexp)
+        const WORD_TT = new TokenType('word', startWordRegexp)
         this.tokenTypes = [
             ONE_LINE_COMMENT_TT,
             WHITESPACE_TT,
@@ -149,8 +151,13 @@ export class Tokenizer {
             }
         }
         if (token === undefined) {
-            console.log(`WARNING - NOT ABLE TO FIND TOKEN: ${remainingInput.slice(0,1)}`)
+            console.log(`WARNING - not able to find token: ${remainingInput.slice(0, 1)}`)
             this.error = 1
+            this.tokens.push({
+                type: 'error_token',
+                value: remainingInput,
+                length: remainingInput.length
+            })
             return remainingInput
         }
         return remainingInput

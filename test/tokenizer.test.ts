@@ -1,4 +1,4 @@
-import { TokenType, oneLineComments, getStringRegexp, numericRegexp } from '../src/tokenizer';
+import { TokenType, oneLineComments, getStringRegexp, numericRegexp, identifierRegexp } from '../src/tokenizer';
 import { DefaultTokenizerConfig, stringType } from '../src/tokenizer_config'
 import { expect } from 'chai';
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
@@ -89,7 +89,7 @@ describe('stringType regexp', () => {
         {
             value: "'do be greedy' if told to'",
             description: 'stop at first end token',
-            stringType: { start: "'", end: "'",  greedy: true }
+            stringType: { start: "'", end: "'", greedy: true }
         },
         {
             value: "'do be greedy\\' if '' you '''' \\\\ have \\\ escapes'''",
@@ -176,5 +176,16 @@ describe('numeric tokenType', () => {
     it('should not handle numbers preceding operator - let operator handle this', () => {
         const example_numeric = '-132.'
         const result = NUMERIC_TT.eatToken(example_numeric)
+    })
+})
+
+describe.only('identifierRegexp', () => {
+    it('should match double quoted', ()=>{
+        console.log(identifierRegexp)
+        const result = '"match me!!".column1'.match(identifierRegexp)
+        expect(result).to.exist
+        if (result){
+            expect(result[0]).to.equal('"match me!!".column1')
+        }
     })
 })

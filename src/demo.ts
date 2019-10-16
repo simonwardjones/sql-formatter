@@ -12,11 +12,13 @@ function listCurrentDefaultTokens() {
   new Tokenizer(DefaultTokenizerConfig).tokenTypes.forEach(x => console.log(x.kind))
 }
 
+// const sqlExample = '$current_date select'
+
 const sqlExample = `
 select T.column1 as col, 
 count(*),
-$current_date::date,
-489c ehr hw.';.[.\[.\[;/.'.\'.]]]
+current_date::date,
+489c ehr hw.';.[.\[.\[;/.'.\.]]]
 --fsd here is a comment
 // and another -- lol
 col2 from demo_sb.table T
@@ -24,8 +26,8 @@ inner join "another"."fake"."example"
 where 1=1
 and x >= 32
 where 'this is a
-
--- string,'`
+-- string,'
+`
 
 function addExampleToBody(): void {
   var node = document.createElement("div");
