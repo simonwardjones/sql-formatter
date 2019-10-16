@@ -96,6 +96,12 @@ describe('stringType regexp', () => {
             description: 'stop at first end token unless escaped when greedy not set or false',
             stringType: { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true }
         },
+        {
+            value: "'do not be greedy\\' if '' you '''' \\\\ have \\\ escapes'''",
+            expected: "'do not be greedy\\'",
+            description: 'don\'t escape if told not to',
+            stringType: { start: "'", end: "'", endEscapeEnd: true }
+        },
         // needless example
         {
             value: "case when end end",
