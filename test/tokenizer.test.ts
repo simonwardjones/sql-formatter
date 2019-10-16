@@ -179,9 +179,9 @@ describe('numeric tokenType', () => {
     })
 })
 
-describe.only('identifierRegexp', () => {
+describe('identifierRegexp', () => {
     it('should match double quoted', ()=>{
-        console.log(identifierRegexp)
+        // console.log(identifierRegexp)
         const result = '"match me!!".column1'.match(identifierRegexp)
         expect(result).to.exist
         if (result){

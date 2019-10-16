@@ -44,7 +44,7 @@ export const identifierRegexp = new RegExp(
     'i')
 
 export const numericRegexp = /\d+\.?\d*([eE][+-]?\d+)?/
-// stringType.escapes.length > 0
+
 export function getStringRegexp(stringType: stringType): RegExp {
     const greedy_token = stringType.greedy ? '' : '?'
     if (stringType.escapes || stringType.endEscapeEnd) {
