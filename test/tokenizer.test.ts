@@ -1,8 +1,8 @@
-import { TokenType, oneLineComments, getStringRegexp, numericRegexp, identifierRegexp } from '../src/tokenizer';
-import { DefaultTokenizerConfig, stringType } from '../src/tokenizer_config'
 import { expect } from 'chai';
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import 'mocha';
+import { getStringRegexp, getStringsRegexp, identifierRegexp, numericRegexp, oneLineComments, tokenNames, TokenType } from '../src/tokenizer';
+import { DefaultTokenizerConfig, stringType } from '../src/tokenizer_config';
 
 
 export const hello = () => 'Hello world!';
@@ -19,7 +19,7 @@ describe('Hello function', () => {
 describe('one line comments tokenType', () => {
 
     it('should capture comments for --', () => {
-        const ONE_LINE_COMMENT_TT = new TokenType('one_line_comment', oneLineComments(['--']))
+        const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(['--']))
         const comment = '-- this is an example comment'
         const result = ONE_LINE_COMMENT_TT.eatToken(comment)
         expect(result[1]).not.undefined
@@ -29,7 +29,7 @@ describe('one line comments tokenType', () => {
     });
 
     it('should capture comments for //', () => {
-        const ONE_LINE_COMMENT_TT = new TokenType('one_line_comment', oneLineComments(['//']))
+        const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(['//']))
         const comment = '// this is an example comment'
         const result = ONE_LINE_COMMENT_TT.eatToken(comment)
         expect(result[1]).not.undefined
@@ -88,12 +88,13 @@ describe('stringType regexp', () => {
         },
         {
             value: "'do be greedy' if told to'",
-            description: 'stop at first end token',
+            description: 'do not stop at first non escaped end token if greedy',
             stringType: { start: "'", end: "'", greedy: true }
         },
         {
-            value: "'do be greedy\\' if '' you '''' \\\\ have \\\ escapes'''",
-            description: 'stop at first end token unless escaped when greedy not set or false',
+            value: "'do be greedy\\' if '' you '''' \\\\ have \\ escapes'''",
+            expected: "'do be greedy\\' if '' you '''",
+            description: 'stop at first end token unless escaped when greedy ',
             stringType: { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true }
         },
         {
@@ -107,22 +108,22 @@ describe('stringType regexp', () => {
             value: "case when end end",
             expected: "case when end",
             description: 'stop at first end token',
-            stringType: { start: "case", end: "end", escapes: ["'", '\\'] }
+            stringType: { start: "case", end: "end", }
         },
         {
             value: "case end when end end",
             description: 'stop at first end token',
-            stringType: { start: "case", end: "end", escapes: ["'", '\\'], greedy: true }
+            stringType: { start: "case", end: "end", greedy: true }
         }
     ]
     for (let test of tests) {
         let description = test.description ? test.description : ""
         test.expected = test.expected ? test.expected : test.value
-        console.log(test.expected)
+        // console.log(test.expected)
         description += ` - should mathch ${test.expected}`
         it(description, () => {
             const stringRegexp = getStringRegexp(test.stringType)
-            // console.log(stringRegexp)
+            console.log(stringRegexp)
             const result = test.value.match(stringRegexp)
             // console.log(result)
             expect(result).to.exist
@@ -152,7 +153,15 @@ describe('stringType regexp', () => {
     })
 })
 
-
+describe('getStringsRegexp', () => {
+    it('should not hang!', () => {
+        const stringsRegexp = getStringsRegexp(DefaultTokenizerConfig.STRING_TYPES)
+        console.log(stringsRegexp)
+        let demo = `'This is a very long hanging example to check that it does not
+        do catestrophic backtracking on when matching strings
+        fdsfsfskjb isdb viubsd vbsdiubvousdb vusdbfovbsdo`.match(stringsRegexp)
+    })
+})
 describe('numeric tokenType', () => {
     const example_numbers = [
         '15',
@@ -163,7 +172,7 @@ describe('numeric tokenType', () => {
         '1.234E2',
         '1.234E+2',
     ]
-    const NUMERIC_TT = new TokenType('numeric', numericRegexp)
+    const NUMERIC_TT = new TokenType(tokenNames.NUMERIC, numericRegexp)
     for (let example_numeric of example_numbers) {
         it(`should handle format like '${example_numeric}'`, () => {
             const result = NUMERIC_TT.eatToken(example_numeric)
@@ -180,11 +189,11 @@ describe('numeric tokenType', () => {
 })
 
 describe('identifierRegexp', () => {
-    it('should match double quoted', ()=>{
+    it('should match double quoted', () => {
         // console.log(identifierRegexp)
         const result = '"match me!!".column1'.match(identifierRegexp)
         expect(result).to.exist
-        if (result){
+        if (result) {
             expect(result[0]).to.equal('"match me!!".column1')
         }
     })
