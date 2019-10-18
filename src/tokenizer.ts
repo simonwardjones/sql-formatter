@@ -2,23 +2,39 @@ import { TokenizerConfig, DefaultTokenizerConfig, stringType } from './tokenizer
 import escapeRegExp from 'lodash/escapeRegExp';
 
 export interface Token {
-    type: string;
+    name: tokenNames;
     value: string;
     length: number;
 }
 
+export enum tokenNames {
+    RESERVED_WORDS = 'reserved_words',
+    STRING = 'string',
+    BLOCK_COMMENT = 'block_comment',
+    ONE_LINE_COMMENT = 'one_line_comment',
+    IDENTIFIER = 'identifier',
+    WHITESPACE = 'whitespace',
+    COMMA = 'comma',
+    OPEN_PARENTHESIS = 'open_parenthesis',
+    CLOSE_PARENTHESIS = 'close_parenthesis',
+    NUMERIC = 'numeric',
+    OPERATOR = 'operator',
+    WORD = 'word',
+    ERROR_TOKEN = 'error_token'
+}
+
 export class TokenType {
-    kind: string
+    name: tokenNames
     regexp: RegExp
-    constructor(kind: string, regexp: RegExp) {
-        this.kind = kind
+    constructor(name: tokenNames, regexp: RegExp) {
+        this.name = name
         this.regexp = regexp
     }
     eatToken(input: string): [string, Token | undefined] {
         var matches = input.match(this.regexp)
         if (matches) {
             return [input, {
-                type: this.kind,
+                name: this.name,
                 value: matches[0],
                 length: matches[0].length,
             }]
@@ -43,9 +59,12 @@ export const identifierRegexp = new RegExp(
     '(' + identifierRegexpPart.source + '|' + wordRegexp.source + ')*',
     'i')
 
-export const numericRegexp = /\d+\.?\d*([eE][+-]?\d+)?/
+export const numericRegexp = /^\d+\.?\d*([eE][+-]?\d+)?/
 
 export function getStringRegexp(stringType: stringType): RegExp {
+    if (stringType.greedy && (stringType.escapes || stringType.endEscapeEnd)){
+        throw "greedy only available when not using escapes or endEscape"
+    }
     const greedy_token = stringType.greedy ? '' : '?'
     if (stringType.escapes || stringType.endEscapeEnd) {
         let escapeChars = ''
@@ -72,8 +91,8 @@ export function getStringRegexp(stringType: stringType): RegExp {
             escapePatterns.push(escapedEndChar.repeat(2))
         }
         return new RegExp('^' + escapeRegExp(stringType.start) + // start with start tokem
-            '([^' + escapeChars + escapedEndChar + ']*' + greedy_token + // match all except end and escapes
-            '(?:' + escapePatterns.join('|') + ')*)*' + greedy_token + // match escape then end
+            '(?:[^' + escapeChars + escapedEndChar + ']' + // match all except end and escapes
+            '(?:' + escapePatterns.join('|') + ')?)*' + // match escape then end
             escapeRegExp(stringType.end))
     }
     return new RegExp(`^${escapeRegExp(stringType.start)}.*${greedy_token}${escapeRegExp(stringType.end)}`)
@@ -95,27 +114,31 @@ export class Tokenizer {
 
     constructor(config: TokenizerConfig) {
         // Define the token types
-        const ONE_LINE_COMMENT_TT = new TokenType('one_line_comment', oneLineComments(config.ONE_LINE_COMMENT_SYMBOLS))
-        const BLOCK_COMMENT = new TokenType('block_comment', /\/\*.*\*\//)
-        const WHITESPACE_TT = new TokenType('whitespace', /^(\s+)/)
-        const COMMA_TT = new TokenType('comma', /^,/)
-        const OPEN_PARENTHESIS_TT = new TokenType('open_parenthesis', /^\(/)
-        const CLOSE_PARENTHESIS_TT = new TokenType('close_parenthesis', /^\)/)
-        const STRING_TT = new TokenType('string', getStringsRegexp(config.STRING_TYPES))
-        const NUMERIC_TT = new TokenType('numeric', numericRegexp)
-        const RESERVED_WORDS_TT = new TokenType('reserved_words', regexpFromWords(config.RESERVED_WORDS))
-        const IDENTIFIER_TT = new TokenType('identifier', identifierRegexp)
-        const OPERATOR_TT = new TokenType('operator', /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|\.)/)
-        const WORD_TT = new TokenType('word', startWordRegexp)
+        const RESERVED_WORDS_TT = new TokenType(tokenNames.RESERVED_WORDS, regexpFromWords(config.RESERVED_WORDS))
+        const STRING_TT = new TokenType(tokenNames.STRING, getStringsRegexp(config.STRING_TYPES))
+        const BLOCK_COMMENT = new TokenType(tokenNames.BLOCK_COMMENT, /^\/\*[\s\S]*\*\//)
+        const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(config.ONE_LINE_COMMENT_SYMBOLS))
+        const IDENTIFIER_TT = new TokenType(tokenNames.IDENTIFIER, identifierRegexp)
+        const WHITESPACE_TT = new TokenType(tokenNames.WHITESPACE, /^(\s+)/)
+        const COMMA_TT = new TokenType(tokenNames.COMMA, /^,/)
+        const OPEN_PARENTHESIS_TT = new TokenType(tokenNames.OPEN_PARENTHESIS, /^\(/)
+        const CLOSE_PARENTHESIS_TT = new TokenType(tokenNames.CLOSE_PARENTHESIS, /^\)/)
+
+        const NUMERIC_TT = new TokenType(tokenNames.NUMERIC, numericRegexp)
+        const OPERATOR_TT = new TokenType(tokenNames.OPERATOR, /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|\.)/)
+        const WORD_TT = new TokenType(tokenNames.WORD, startWordRegexp)
         this.tokenTypes = [
+            RESERVED_WORDS_TT,
+            STRING_TT,
+            BLOCK_COMMENT,
             ONE_LINE_COMMENT_TT,
+            IDENTIFIER_TT,
             WHITESPACE_TT,
             COMMA_TT,
             OPEN_PARENTHESIS_TT,
             CLOSE_PARENTHESIS_TT,
-            STRING_TT,
-            RESERVED_WORDS_TT,
-            IDENTIFIER_TT,
+
+            NUMERIC_TT,
             OPERATOR_TT,
             WORD_TT]
         this.tokens = []
@@ -145,7 +168,7 @@ export class Tokenizer {
                 remainingInput = remainingInput.slice(token.length)
                 // console.log('Eaten a token of type ' + token.type + '\nvalue: ' + token.value)
                 // console.log(token.value)
-                // console.log(remainingInput)
+                // console.log(this.tokens)
                 token = undefined // Reset the token
                 return remainingInput
             }
@@ -154,7 +177,7 @@ export class Tokenizer {
             console.log(`WARNING - not able to find token: ${remainingInput.slice(0, 1)}`)
             this.error = 1
             this.tokens.push({
-                type: 'error_token',
+                name: tokenNames.ERROR_TOKEN,
                 value: remainingInput,
                 length: remainingInput.length
             })
