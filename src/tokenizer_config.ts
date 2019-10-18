@@ -18,7 +18,7 @@ export const DefaultTokenizerConfig: TokenizerConfig = {
         '//'
     ],
     STRING_TYPES: [
-        { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true, greedy: true },
+        { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true },
         { start: '"', end: '"', escapes: ['\\'] }, // move this to the indentifiers
         { start: '$$', end: '$$' }],
     RESERVED_WORDS: [
