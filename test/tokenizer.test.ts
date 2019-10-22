@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import 'mocha';
-import { getStringRegexp, getStringsRegexp, identifierRegexp, numericRegexp, oneLineComments, tokenNames, TokenType } from '../src/tokenizer';
-import { DefaultTokenizerConfig, stringType } from '../src/tokenizer_config';
+import { getStringRegexp, getStringsRegexp, identifierDotRegexpPart, identifierQuotedRegexpPart, identifierRegexp, numericRegexp, oneLineComments, tokenNames, TokenType } from '../src/tokenizer';
+import { DefaultTokenizerConfig, StringType } from '../src/tokenizer_config';
 
 
 export const hello = () => 'Hello world!';
@@ -39,11 +39,12 @@ describe('one line comments tokenType', () => {
     });
 });
 
-describe('stringType regexp', () => {
+
+describe('StringType regexp', () => {
     interface TestCase {
         description?: string
         value: string
-        stringType: stringType
+        StringType: StringType
         expected?: string
 
     }
@@ -51,69 +52,68 @@ describe('stringType regexp', () => {
         {
             value: "'this is a string'",
             description: 'match basic single quote string',
-            stringType: { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true }
+            StringType: { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true }
         },
         {
             value: "'this is single quote a string'",
             description: 'match basic single quote string with empty escapes',
-            stringType: { start: "'", end: "'", escapes: [] }
+            StringType: { start: "'", end: "'", escapes: [] }
         },
         {
             value: "'simple single quote string'",
             description: 'match basic single quote string with no escapes',
-            stringType: { start: "'", end: "'" }
+            StringType: { start: "'", end: "'" }
         },
         {
             value: '"this is a double quote string"',
             description: 'match basic double quote string with no escapes',
-            stringType: { start: '"', end: '"' }
+            StringType: { start: '"', end: '"' }
         },
         {
             value: '$$this is a string$$',
             description: 'match basic dollar quote string with no escapes',
-            stringType: { start: '$$', end: '$$' }
+            StringType: { start: '$$', end: '$$' }
         },
 
         // let's get more tricky and put in escapes
         {
             value: '$$this is $ a string$$',
             description: 'don\'t escape with one of the end tokens',
-            stringType: { start: '$$', end: '$$' }
+            StringType: { start: '$$', end: '$$' }
         },
         {
             value: "'do not be greedy' even if you're hungry'",
             expected: "'do not be greedy'",
             description: 'stop at first end token',
-            stringType: { start: "'", end: "'" }
+            StringType: { start: "'", end: "'" }
         },
         {
             value: "'do be greedy' if told to'",
             description: 'do not stop at first non escaped end token if greedy',
-            stringType: { start: "'", end: "'", greedy: true }
+            StringType: { start: "'", end: "'", greedy: true }
         },
         {
             value: "'do be greedy\\' if '' you '''' \\\\ have \\ escapes'''",
             expected: "'do be greedy\\' if '' you '''",
             description: 'stop at first end token unless escaped when greedy ',
-            stringType: { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true }
+            StringType: { start: "'", end: "'", escapes: ['\\'], endEscapeEnd: true }
         },
         {
             value: "'do not be greedy\\' if '' you '''' \\\\ have \\\ escapes'''",
             expected: "'do not be greedy\\'",
             description: 'don\'t escape if told not to',
-            stringType: { start: "'", end: "'", endEscapeEnd: true }
+            StringType: { start: "'", end: "'", endEscapeEnd: true }
         },
-        // needless example
         {
             value: "case when end end",
             expected: "case when end",
             description: 'stop at first end token',
-            stringType: { start: "case", end: "end", }
+            StringType: { start: "case", end: "end", }
         },
         {
             value: "case end when end end",
             description: 'stop at first end token',
-            stringType: { start: "case", end: "end", greedy: true }
+            StringType: { start: "case", end: "end", greedy: true }
         }
     ]
     for (let test of tests) {
@@ -122,8 +122,8 @@ describe('stringType regexp', () => {
         // console.log(test.expected)
         description += ` - should mathch ${test.expected}`
         it(description, () => {
-            const stringRegexp = getStringRegexp(test.stringType)
-            console.log(stringRegexp)
+            const stringRegexp = getStringRegexp(test.StringType)
+            // console.log(stringRegexp)
             const result = test.value.match(stringRegexp)
             // console.log(result)
             expect(result).to.exist
@@ -151,17 +151,74 @@ describe('stringType regexp', () => {
         }
         ).to.throw()
     })
+    it('should error if greedy and escaped', () => {
+        expect(() => {
+            getStringRegexp({ start: '"', end: 'SIMON', escapes: ['\\'], greedy: true })
+        }
+        ).to.throw()
+    })
+    it('should error if greedy and endEscaped', () => {
+        expect(() => {
+            getStringRegexp({ start: '"', end: 'SIMON', endEscapeEnd: true, greedy: true })
+        }
+        ).to.throw()
+    })
 })
+
 
 describe('getStringsRegexp', () => {
     it('should not hang!', () => {
         const stringsRegexp = getStringsRegexp(DefaultTokenizerConfig.STRING_TYPES)
-        console.log(stringsRegexp)
+        // console.log(stringsRegexp)
         let demo = `'This is a very long hanging example to check that it does not
         do catestrophic backtracking on when matching strings
         fdsfsfskjb isdb viubsd vbsdiubvousdb vusdbfovbsdo`.match(stringsRegexp)
     })
 })
+
+describe('identifier Regexp', () => {
+    it('identifierQuotedRegexpPart should match double quotes identifiers', () => {
+        const test_identifier = '"table.name"'
+        const result = test_identifier.match(identifierQuotedRegexpPart)
+        expect(result).is.not.null
+        if (result) {
+            expect(result[0]).to.equal(test_identifier)
+        }
+    })
+    it('identifierDotRegexpPart should match dot identifiers', () => {
+        const test_identifier = '"table.name"."column"'
+        const result = test_identifier.match(identifierDotRegexpPart)
+        // console.log(identifierDotRegexpPart)
+        expect(result).is.not.null
+        if (result) {
+            expect(result[0]).to.equal(test_identifier)
+        }
+    })
+    it('identifierRegexp should match full identifier example', () => {
+        console.log(identifierRegexp)
+        const test_identifier = '"schema21".table_2."column"'
+        const result = test_identifier.match(identifierRegexp)
+        expect(result).to.exist
+        if (result) {
+            expect(result[0]).to.equal(test_identifier)
+        }
+    })
+    it('identifierRegexp should match full example with spaces', () => {
+        const test_identifier = '"schema21" . table_2 . "column"'
+        const result = test_identifier.match(identifierRegexp)
+        expect(result).to.exist
+        if (result) {
+            expect(result[0]).to.equal(test_identifier)
+        }
+    })
+    it('identifierRegexp should not match one unquotes identifier', () => {
+        const test_identifier = 'table1'
+        const result = test_identifier.match(identifierRegexp)
+        expect(result).to.not.exist
+    })
+})
+
+
 describe('numeric tokenType', () => {
     const example_numbers = [
         '15',
@@ -185,16 +242,5 @@ describe('numeric tokenType', () => {
     it('should not handle numbers preceding operator - let operator handle this', () => {
         const example_numeric = '-132.'
         const result = NUMERIC_TT.eatToken(example_numeric)
-    })
-})
-
-describe('identifierRegexp', () => {
-    it('should match double quoted', () => {
-        // console.log(identifierRegexp)
-        const result = '"match me!!".column1'.match(identifierRegexp)
-        expect(result).to.exist
-        if (result) {
-            expect(result[0]).to.equal('"match me!!".column1')
-        }
     })
 })
