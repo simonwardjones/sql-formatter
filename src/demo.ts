@@ -8,13 +8,10 @@ export function hello(): string {
   return `Hello ${world}! `;
 }
 
-
 function listCurrentDefaultTokens() {
   console.log('Hello from ts, listing token kinds')
   new Tokenizer(DefaultTokenizerConfig).tokenTypes.forEach(x => console.log(x.name))
 }
-
-// const sqlExample = '$current_date select'
 
 const sqlExample = `
 select 
@@ -41,18 +38,17 @@ function addExampleToBody(): void {
   document.body.append(node);
 }
 
-function exampleDebug() {
+function exampleTokenizer() {
   // debugging
   var divideBy = "#"
-  console.log('debugging' + '\n' + divideBy.repeat(40) + '\n')
+  console.log('debugging Tokenizer' + '\n' + divideBy.repeat(40) + '\n')
   var demoTokenizer = new Tokenizer(DefaultTokenizerConfig)
   var demoTokenFormatter = new TokenFormatter(DefaultLayoutConfig)
-  console.log(demoTokenizer.tokens)
-  var tokens = demoTokenizer.tokenize(sqlExample)
-  // console.log(tokens)
+  console.log(demoTokenizer.tokenTypes.forEach(x => console.log(x.regexp, x.name)))
+  let tokens = demoTokenizer.tokenize(sqlExample)
+  console.log(tokens)
   console.log(demoTokenFormatter.formatTokens(tokens))
+  // let fix = /^'(?:(?=([^\\']*))\1(?:[\\].|'')?)*'|^"(?:(?=([^\\"]*))\2(?:[\\].)?)*"|^\$\$.*?\$\$/
+  // this is a very efficient fix to back tracking
 }
-exampleDebug()
-
-// let fix = /^'(?:(?=([^\\']*))\1(?:[\\].|'')?)*'|^"(?:(?=([^\\"]*))\2(?:[\\].)?)*"|^\$\$.*?\$\$/
-// this is a very efficient fix to back tracking
+// exampleTokenizer()

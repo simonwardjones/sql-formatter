@@ -1,5 +1,5 @@
-import { TokenizerConfig, DefaultTokenizerConfig, stringType } from './tokenizer_config'
 import escapeRegExp from 'lodash/escapeRegExp';
+import { StringType, TokenizerConfig } from './tokenizer_config';
 
 export interface Token {
     name: tokenNames;
@@ -46,64 +46,66 @@ export class TokenType {
 export function regexpFromWords(words: string[]): RegExp {
     return RegExp('^(' + words.join('|') + ')', 'i')
 }
+
 export function oneLineComments(starters: string[]) {
     return new RegExp('^(' + starters.join('|') + ').*', 'i')
 }
 
-export const wordRegexp = /[\w_][\w$_]*/i
-export const startWordRegexp = /^[\w_][\w$_]*/i
-
-export const identifierRegexpPart = getStringRegexp({ start: '"', end: '"' })
-export const identifierRegexp = new RegExp(
-    '(' + identifierRegexpPart.source + '|^' + wordRegexp.source + ')\\.' +
-    '(' + identifierRegexpPart.source + '|' + wordRegexp.source + ')*',
-    'i')
-
 export const numericRegexp = /^\d+\.?\d*([eE][+-]?\d+)?/
+export const wordRegexp = /[\w_][\w$_0-9]*/i
+export const startWordRegexp = /^[\w_][\w$_0-9]*/i
+export const identifierQuotedRegexpPart = getStringRegexp({ start: '"', end: '"' })
+export const identifierDotRegexpPart = new RegExp(
+    '(' + identifierQuotedRegexpPart.source + '|' + wordRegexp.source + ')' +
+    '(\\s*\\.\\s*(' + identifierQuotedRegexpPart.source + '|' + wordRegexp.source + '))+',
+    'i')
+export const identifierRegexp = new RegExp(
+    '^(' + identifierDotRegexpPart.source + '|' + identifierQuotedRegexpPart.source + ')'
+)
 
-export function getStringRegexp(stringType: stringType): RegExp {
-    if (stringType.greedy && (stringType.escapes || stringType.endEscapeEnd)){
+export function getStringRegexp(StringType: StringType): RegExp {
+    if (StringType.greedy && (StringType.escapes || StringType.endEscapeEnd)) {
         throw "greedy only available when not using escapes or endEscape"
     }
-    const greedy_token = stringType.greedy ? '' : '?'
-    if (stringType.escapes || stringType.endEscapeEnd) {
+    if (StringType.escapes || StringType.endEscapeEnd) {
         let escapeChars = ''
         let escapedEndChar = ''
         let escapePatterns = []
-        if (stringType.escapes) {
-            stringType.escapes.forEach((escape) => {
+        if (StringType.escapes) {
+            StringType.escapes.forEach((escape) => {
                 if (escape.length != 1) {
                     throw "Escape must have length 1";
                 }
-                if (escape == stringType.end) {
+                if (escape == StringType.end) {
                     console
                     throw "Please don't include end in escapes - use endEscapeEnd"
                 }
             })
-            escapeChars = stringType.escapes.map(escapeRegExp).join('')
+            escapeChars = StringType.escapes.map(escapeRegExp).join('')
             escapePatterns.push(`[${escapeChars}].`)
         }
-        if (stringType.endEscapeEnd) {
-            if (stringType.end.length > 1) {
+        if (StringType.endEscapeEnd) {
+            if (StringType.end.length > 1) {
                 throw "end cannot be greater than 1 char when endEscapeEnd true"
             }
-            escapedEndChar = escapeRegExp(stringType.end)
+            escapedEndChar = escapeRegExp(StringType.end)
             escapePatterns.push(escapedEndChar.repeat(2))
         }
-        return new RegExp('^' + escapeRegExp(stringType.start) + // start with start tokem
+        return new RegExp(escapeRegExp(StringType.start) + // start with start tokem
             '(?:[^' + escapeChars + escapedEndChar + ']' + // match all except end and escapes
             '(?:' + escapePatterns.join('|') + ')?)*' + // match escape then end
-            escapeRegExp(stringType.end))
+            escapeRegExp(StringType.end))
     }
-    return new RegExp(`^${escapeRegExp(stringType.start)}.*${greedy_token}${escapeRegExp(stringType.end)}`)
+    const greedy_token = StringType.greedy ? '' : '?'
+    return new RegExp(`${escapeRegExp(StringType.start)}.*${greedy_token}${escapeRegExp(StringType.end)}`)
 }
 
-export function getStringsRegexp(stringTypes: stringType[]): RegExp {
-    const allStringTypes = stringTypes.map((stringType) => {
-        return getStringRegexp(stringType).source
+export function getStringsRegexp(StringTypes: StringType[]): RegExp {
+    const allStringTypes = StringTypes.map((StringType) => {
+        return getStringRegexp(StringType).source
     }).join('|')
     // console.log(allStringTypes)
-    const string_regexp = new RegExp(allStringTypes, 'i')
+    const string_regexp = new RegExp('^(' + allStringTypes + ')', 'i')
     return string_regexp
 }
 
@@ -119,7 +121,7 @@ export class Tokenizer {
         const BLOCK_COMMENT = new TokenType(tokenNames.BLOCK_COMMENT, /^\/\*[\s\S]*\*\//)
         const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(config.ONE_LINE_COMMENT_SYMBOLS))
         const IDENTIFIER_TT = new TokenType(tokenNames.IDENTIFIER, identifierRegexp)
-        const WHITESPACE_TT = new TokenType(tokenNames.WHITESPACE, /^(\s+)/)
+        const WHITESPACE_TT = new TokenType(tokenNames.WHITESPACE, /^\s+/)
         const COMMA_TT = new TokenType(tokenNames.COMMA, /^,/)
         const OPEN_PARENTHESIS_TT = new TokenType(tokenNames.OPEN_PARENTHESIS, /^\(/)
         const CLOSE_PARENTHESIS_TT = new TokenType(tokenNames.CLOSE_PARENTHESIS, /^\)/)

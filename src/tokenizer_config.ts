@@ -1,14 +1,14 @@
 export interface TokenizerConfig {
     ONE_LINE_COMMENT_SYMBOLS: string[]
-    STRING_TYPES: stringType[]
+    STRING_TYPES: StringType[]
     RESERVED_WORDS: string[]
 }
 
-export interface stringType {
+export interface StringType {
     start: string
     end: string
     greedy?: boolean
-    escapes?: string[],
+    escapes?: string[]
     endEscapeEnd?: boolean // whether the end of the string can escape itself
 }
 
