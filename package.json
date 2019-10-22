@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "lodash": "^4.17.15",
-    "typescript": "^3.6.4"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/chai": "^4.2.3",
@@ -9,11 +8,18 @@
     "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "mocha": "^6.2.1",
-    "ts-node": "^8.4.1"
+    "ts-loader": "^6.2.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
   },
   "scripts": {
     "test": "mocha -r ts-node/register test/**.test.ts",
+    "test-l": "mocha -r ts-node/register test/layout.test.ts",
+    "test-t": "mocha -r ts-node/register test/tonkenizer.test.ts",
     "build": "tsc -p tsconfig.json",
+    "build-web": "webpack",
     "watch": "tsc -w -p tsconfig.json"
   }
 }
