@@ -195,7 +195,7 @@ describe('identifier Regexp', () => {
         }
     })
     it('identifierRegexp should match full identifier example', () => {
-        console.log(identifierRegexp)
+        // console.log(identifierRegexp)
         const test_identifier = '"schema21".table_2."column"'
         const result = test_identifier.match(identifierRegexp)
         expect(result).to.exist
