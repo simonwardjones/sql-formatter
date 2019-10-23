@@ -1,4 +1,4 @@
-# sql-formatter
+# sqlformat
 Configurable SQL formatter
 
 
