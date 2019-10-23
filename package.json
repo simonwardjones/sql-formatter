@@ -8,6 +8,7 @@
     "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",
+    "rimraf": "^3.0.0",
     "ts-loader": "^6.2.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4",
@@ -15,25 +16,23 @@
     "webpack-cli": "^3.3.9"
   },
   "scripts": {
+    "clean": "rimraf lib dist",
     "test": "mocha -r ts-node/register test/**.test.ts",
     "test-t": "mocha -r ts-node/register test/tokenizer.test.ts",
     "test-l": "mocha -r ts-node/register test/layout.test.ts",
     "build": "tsc -p tsconfig.json",
-    "tsc": "tsc -p tsconfig.json",
+    "prepare": "npm test && npm run clean && npm run build",
     "build-web": "webpack",
     "watch": "tsc -w -p tsconfig.json"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "name": "sqlformat",
+  "name": "@simonwardjones/sql-formatter",
   "description": "Configurable SQL formatter",
-  "version": "1.0.0",
-  "directories": {
-    "test": "test"
-  },
+  "version": "1.0.1",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/simonwardjones/sqlformat.git"
+    "url": "git+ssh://git@github.com/simonwardjones/sql-formatter.git"
   },
   "keywords": [
     "sql",
@@ -43,7 +42,7 @@
   "author": "Simon Ward-Jones",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/simonwardjones/sqlformat/issues"
+    "url": "https://github.com/simonwardjones/sql-formatter/issues"
   },
-  "homepage": "https://github.com/simonwardjones/sqlformat#readme"
+  "homepage": "https://github.com/simonwardjones/sql-formatter#readme"
 }
