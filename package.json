@@ -15,11 +15,34 @@
     "webpack-cli": "^3.3.9"
   },
   "scripts": {
-    "test": "mocha -r ts-node/register test/**.test.ts",
-    "test-l": "mocha -r ts-node/register test/layout.test.ts",
-    "test-t": "mocha -r ts-node/register test/tonkenizer.test.ts",
-    "build": "tsc -p tsconfig.json",
+    "test": "./node_modules/.bin/mocha -r ts-node/register test/**.test.ts",
+    "test-l": "./node_modules/.bin/mocha -r ts-node/register test/layout.test.ts",
+    "test-t": "./node_modules/.bin/mocha -r ts-node/register test/tonkenizer.test.ts",
+    "build": "./node_modules/.bin/tsc -p tsconfig.json",
     "build-web": "webpack",
-    "watch": "tsc -w -p tsconfig.json"
-  }
+    "watch": "./node_modules/.bin/tsc -w -p tsconfig.json"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "name": "sqlformat",
+  "description": "Configurable SQL formatter",
+  "version": "1.0.0",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonwardjones/sql-formatter.git"
+  },
+  "keywords": [
+    "sql",
+    "formatter",
+    "tokenizer"
+  ],
+  "author": "Simon Ward-Jones",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simonwardjones/sql-formatter/issues"
+  },
+  "homepage": "https://github.com/simonwardjones/sql-formatter#readme"
 }
