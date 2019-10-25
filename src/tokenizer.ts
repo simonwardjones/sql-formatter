@@ -76,7 +76,7 @@ export function getStringRegexp(StringType: StringType): RegExp {
                 if (escape.length != 1) {
                     throw "Escape must have length 1";
                 }
-                if (escape == StringType.end) {
+                if (escape === StringType.end) {
                     console
                     throw "Please don't include end in escapes - use endEscapeEnd"
                 }
