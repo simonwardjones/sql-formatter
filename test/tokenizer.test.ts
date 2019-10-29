@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import 'mocha';
-import { getStringRegexp, getStringsRegexp, identifierDotRegexpPart, identifierQuotedRegexpPart, identifierRegexp, numericRegexp, oneLineComments, TokenNames, TokenType } from '../src/tokenizer';
+import { getStringRegexp, getStringsRegexp, identifierDotRegexpPart, identifierQuotedRegexpPart, identifierRegexp, numericRegexp, oneLineComments, TokenNames, TokenType, regexpFromWords } from '../src/tokenizer';
 import { DefaultTokenizerConfig, StringType } from '../src/tokenizer_config';
 
 
@@ -173,6 +173,22 @@ describe('getStringsRegexp', () => {
         let demo = `'This is a very long hanging example to check that it does not
         do catestrophic backtracking on when matching strings
         fdsfsfskjb isdb viubsd vbsdiubvousdb vusdbfovbsdo`.match(stringsRegexp)
+    })
+})
+
+describe('regexpFromWords', () => {
+    it('should not match double key words e.g. selectselect', () => {
+        const regexp: RegExp = regexpFromWords(['select'])
+        const result = 'selectselect'.match(regexp)
+        expect(result).to.be.null
+    })
+    it('should  match single key words e.g. select', () => {
+        const regexp: RegExp = regexpFromWords(['select'])
+        const result = 'select'.match(regexp)
+        expect(result).to.exist
+        if (result){
+            expect(result[1]).to.equal('select')
+        }
     })
 })
 

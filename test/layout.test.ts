@@ -6,14 +6,17 @@ import { TokenNames } from '../src/tokenizer'
 
 describe('initialising TokenFormatter', () => {
     const tokenFormatter = new TokenFormatter(DefaultLayoutConfig)
+    tokenFormatter.formatTokens(
+        [{ name: TokenNames.RESERVED_WORDS, value: 'select', length: 6 }]
+    )
     it('should have starting context global', () => {
-        expect(tokenFormatter.currentContext().name).to.equal('GLOBAL_CONTEXT')
+        expect(tokenFormatter.currentContext().name).to.equal('SELECT_CONTEXT')
     })
 })
 
-describe.only('handling reserved words', () => {
-    it('should write token and new line if in global context', () => {
-        const expected = 'select\n'
+describe('handling reserved words', () => {
+    it('should write single token without new line', () => {
+        const expected = 'select'
         const tokens = [
             { name: TokenNames.WHITESPACE, value: '\n', length: 1 },
             { name: TokenNames.RESERVED_WORDS, value: 'select', length: 6 }]
@@ -22,8 +25,6 @@ describe.only('handling reserved words', () => {
         console.log(result)
         expect(result).to.equal(expected)
     })
-    it('should write newline token and space unless inner join or equivalent')
-    it('should the reservered words as all other words')
 })
 
 
