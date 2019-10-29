@@ -20,7 +20,7 @@
     "test": "mocha -r ts-node/register test/**.test.ts",
     "test-t": "mocha -r ts-node/register test/tokenizer.test.ts",
     "test-l": "mocha -r ts-node/register test/layout.test.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "npm run clean && tsc -p tsconfig.json",
     "prepare": "npm test && npm run clean && npm run build",
     "build-web": "webpack",
     "watch": "tsc -w -p tsconfig.json"
