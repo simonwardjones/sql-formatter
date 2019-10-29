@@ -24,6 +24,48 @@ npm publish --access public .
 ```
 
 # To DO
+- [X] Add to npm `@simonwardjones/sql-formatter`
+- [X] ~Use function of contexts for context depth~ N/A context depth not equal to contextStack lenght (inline contexts)
 - [ ] Check word breaks after regexp e.g. `selectselect`
-- [X] Add to npm
+- [ ] Get rid or sql block type !! not requred any more!
+- [ ] Parametrize whether to close subquery on new line?
+- [ ] change fomratter lists to tokenizer (find them earlier)
+- [ ] when error write the first half as they were
+- [ ] Use contexts from config
 
+# Layout Rules
+
+### general
+
+Considerations:
+ - expressions should be indented
+ - key words like from shouldn't be
+
+Rules:
+    - top level words start new line at current depth e.g. select from
+        - some of these demand a newline after as well, e.g. select
+    - commas start new line with current depth + indent
+    - commas should act differenetly in row number for example
+    - tokens should write space before unless they are the first word.
+
+### Parenthesis
+
+Considerations:
+ - mathematical grouping
+ - sub queries 
+ - functions e.g. count(*)
+
+Rules:
+ - write the open in the current context then push tokens to stack checking how long it is until close
+    - if we meet a reserved word start writing the tokens as normal
+
+
+### Commas 
+Considerations:
+ - order by numbers shouldn't start new row, words should.
+ - partition by shouldn't start new row unless really long
+
+### Reserved Words
+
+Rules
+ - If first newLineReservedWord just write
