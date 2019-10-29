@@ -2,12 +2,12 @@ import escapeRegExp from 'lodash/escapeRegExp';
 import { StringType, TokenizerConfig } from './tokenizer_config';
 
 export interface Token {
-    name: tokenNames;
+    name: TokenNames;
     value: string;
     length: number;
 }
 
-export enum tokenNames {
+export enum TokenNames {
     RESERVED_WORDS = 'reserved_words',
     STRING = 'string',
     BLOCK_COMMENT = 'block_comment',
@@ -24,9 +24,9 @@ export enum tokenNames {
 }
 
 export class TokenType {
-    name: tokenNames
+    name: TokenNames
     regexp: RegExp
-    constructor(name: tokenNames, regexp: RegExp) {
+    constructor(name: TokenNames, regexp: RegExp) {
         this.name = name
         this.regexp = regexp
     }
@@ -44,7 +44,7 @@ export class TokenType {
 }
 
 export function regexpFromWords(words: string[]): RegExp {
-    return RegExp('^(' + words.join('|') + ')', 'i')
+    return RegExp('^(' + words.join('|') + ')\\b', 'i')
 }
 
 export function oneLineComments(starters: string[]) {
@@ -116,19 +116,19 @@ export class Tokenizer {
 
     constructor(config: TokenizerConfig) {
         // Define the token types
-        const RESERVED_WORDS_TT = new TokenType(tokenNames.RESERVED_WORDS, regexpFromWords(config.RESERVED_WORDS))
-        const STRING_TT = new TokenType(tokenNames.STRING, getStringsRegexp(config.STRING_TYPES))
-        const BLOCK_COMMENT = new TokenType(tokenNames.BLOCK_COMMENT, /^\/\*[\s\S]*\*\//)
-        const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(config.ONE_LINE_COMMENT_SYMBOLS))
-        const IDENTIFIER_TT = new TokenType(tokenNames.IDENTIFIER, identifierRegexp)
-        const WHITESPACE_TT = new TokenType(tokenNames.WHITESPACE, /^\s+/)
-        const COMMA_TT = new TokenType(tokenNames.COMMA, /^,/)
-        const OPEN_PARENTHESIS_TT = new TokenType(tokenNames.OPEN_PARENTHESIS, /^\(/)
-        const CLOSE_PARENTHESIS_TT = new TokenType(tokenNames.CLOSE_PARENTHESIS, /^\)/)
+        const RESERVED_WORDS_TT = new TokenType(TokenNames.RESERVED_WORDS, regexpFromWords(config.RESERVED_WORDS))
+        const STRING_TT = new TokenType(TokenNames.STRING, getStringsRegexp(config.STRING_TYPES))
+        const BLOCK_COMMENT = new TokenType(TokenNames.BLOCK_COMMENT, /^\/\*[\s\S]*\*\//)
+        const ONE_LINE_COMMENT_TT = new TokenType(TokenNames.ONE_LINE_COMMENT, oneLineComments(config.ONE_LINE_COMMENT_SYMBOLS))
+        const IDENTIFIER_TT = new TokenType(TokenNames.IDENTIFIER, identifierRegexp)
+        const WHITESPACE_TT = new TokenType(TokenNames.WHITESPACE, /^\s+/)
+        const COMMA_TT = new TokenType(TokenNames.COMMA, /^,/)
+        const OPEN_PARENTHESIS_TT = new TokenType(TokenNames.OPEN_PARENTHESIS, /^\(/)
+        const CLOSE_PARENTHESIS_TT = new TokenType(TokenNames.CLOSE_PARENTHESIS, /^\)/)
 
-        const NUMERIC_TT = new TokenType(tokenNames.NUMERIC, numericRegexp)
-        const OPERATOR_TT = new TokenType(tokenNames.OPERATOR, /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|\.)/)
-        const WORD_TT = new TokenType(tokenNames.WORD, startWordRegexp)
+        const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
+        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|\.)/)
+        const WORD_TT = new TokenType(TokenNames.WORD, startWordRegexp)
         this.tokenTypes = [
             RESERVED_WORDS_TT,
             STRING_TT,
@@ -179,7 +179,7 @@ export class Tokenizer {
             console.log(`WARNING - not able to find token: ${remainingInput.slice(0, 1)}`)
             this.error = 1
             this.tokens.push({
-                name: tokenNames.ERROR_TOKEN,
+                name: TokenNames.ERROR_TOKEN,
                 value: remainingInput,
                 length: remainingInput.length
             })

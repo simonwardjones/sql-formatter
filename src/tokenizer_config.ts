@@ -49,6 +49,7 @@ export const DefaultTokenizerConfig: TokenizerConfig = {
         'distinct',
         'drop',
         'else',
+        'end',
         'exists',
         'false',
         'following',

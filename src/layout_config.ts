@@ -8,21 +8,35 @@ export enum Case {
 
 export interface LayoutConfig {
     indent: string;
+    maxLineLength: number;
+    minBlockLength: number;
     reservedWordCase: Case;
-    newLineReservedWords: string[];
+    levelOneUnique: string[];
+    levelTwoNonUnique: string[];
+    levelOneNonUnique: string[];
     commaEnd: boolean;
 }
 
 export const DefaultLayoutConfig: LayoutConfig = {
-    indent: ' ',
+    indent: '    ',
+    maxLineLength: 80,
+    minBlockLength: 2,
     reservedWordCase: Case.LOWER,
     commaEnd: true,
-    newLineReservedWords: [
+    levelOneUnique: [
+        // 'select',
+    ],
+    levelTwoNonUnique: [
+        'on',
+    ],
+    levelOneNonUnique: [
+        'else',
+        'when',
+        'select',
         'and',
         'alter',
         'cross',
         'delete',
-        'else',
         'from',
         'group',
         'having',
@@ -36,7 +50,6 @@ export const DefaultLayoutConfig: LayoutConfig = {
         'order',
         'outer',
         'right',
-        'select',
         'set',
         'union',
         'update',

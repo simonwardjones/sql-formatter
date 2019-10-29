@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import 'mocha';
-import { getStringRegexp, getStringsRegexp, identifierDotRegexpPart, identifierQuotedRegexpPart, identifierRegexp, numericRegexp, oneLineComments, tokenNames, TokenType } from '../src/tokenizer';
+import { getStringRegexp, getStringsRegexp, identifierDotRegexpPart, identifierQuotedRegexpPart, identifierRegexp, numericRegexp, oneLineComments, TokenNames, TokenType } from '../src/tokenizer';
 import { DefaultTokenizerConfig, StringType } from '../src/tokenizer_config';
 
 
@@ -19,7 +19,7 @@ describe('Hello function', () => {
 describe('one line comments tokenType', () => {
 
     it('should capture comments for --', () => {
-        const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(['--']))
+        const ONE_LINE_COMMENT_TT = new TokenType(TokenNames.ONE_LINE_COMMENT, oneLineComments(['--']))
         const comment = '-- this is an example comment'
         const result = ONE_LINE_COMMENT_TT.eatToken(comment)
         expect(result[1]).not.undefined
@@ -29,7 +29,7 @@ describe('one line comments tokenType', () => {
     });
 
     it('should capture comments for //', () => {
-        const ONE_LINE_COMMENT_TT = new TokenType(tokenNames.ONE_LINE_COMMENT, oneLineComments(['//']))
+        const ONE_LINE_COMMENT_TT = new TokenType(TokenNames.ONE_LINE_COMMENT, oneLineComments(['//']))
         const comment = '// this is an example comment'
         const result = ONE_LINE_COMMENT_TT.eatToken(comment)
         expect(result[1]).not.undefined
@@ -180,7 +180,7 @@ describe('identifier Regexp', () => {
     it('identifierQuotedRegexpPart should match double quotes identifiers', () => {
         const test_identifier = '"table.name"'
         const result = test_identifier.match(identifierQuotedRegexpPart)
-        expect(result).is.not.null
+        expect(result).is.not.undefined
         if (result) {
             expect(result[0]).to.equal(test_identifier)
         }
@@ -189,7 +189,7 @@ describe('identifier Regexp', () => {
         const test_identifier = '"table.name"."column"'
         const result = test_identifier.match(identifierDotRegexpPart)
         // console.log(identifierDotRegexpPart)
-        expect(result).is.not.null
+        expect(result).is.not.undefined
         if (result) {
             expect(result[0]).to.equal(test_identifier)
         }
@@ -229,7 +229,7 @@ describe('numeric tokenType', () => {
         '1.234E2',
         '1.234E+2',
     ]
-    const NUMERIC_TT = new TokenType(tokenNames.NUMERIC, numericRegexp)
+    const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
     for (let example_numeric of example_numbers) {
         it(`should handle format like '${example_numeric}'`, () => {
             const result = NUMERIC_TT.eatToken(example_numeric)
