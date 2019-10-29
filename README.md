@@ -27,7 +27,7 @@ npm publish --access public .
 - [X] Add to npm `@simonwardjones/sql-formatter`
 - [X] ~Use function of contexts for context depth~ N/A context depth not equal to contextStack lenght (inline contexts)
 - [X] Check word breaks after regexp e.g. `selectselect` (added test case)
-- [ ] Get rid or sql block type !! not requred any more!
+- [X] Get rid or sql block type !! not requred any more!
 - [ ] Parametrize whether to close subquery on new line?
 - [ ] change fomratter lists to tokenizer (find them earlier)
 - [ ] when error write the first half as they were

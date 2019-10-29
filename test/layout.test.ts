@@ -26,6 +26,3 @@ describe('handling reserved words', () => {
         expect(result).to.equal(expected)
     })
 })
-
-
-// select * from (select * from (select * from table)x)a
