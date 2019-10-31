@@ -17,6 +17,7 @@ export enum TokenNames {
     COMMA = 'comma',
     OPEN_PARENTHESIS = 'open_parenthesis',
     CLOSE_PARENTHESIS = 'close_parenthesis',
+    QUERY_SEPERATOR = 'query_seperator',
     NUMERIC = 'numeric',
     OPERATOR = 'operator',
     WORD = 'word',
@@ -125,9 +126,9 @@ export class Tokenizer {
         const COMMA_TT = new TokenType(TokenNames.COMMA, /^,/)
         const OPEN_PARENTHESIS_TT = new TokenType(TokenNames.OPEN_PARENTHESIS, /^\(/)
         const CLOSE_PARENTHESIS_TT = new TokenType(TokenNames.CLOSE_PARENTHESIS, /^\)/)
-
+        const QUERY_SEPERATOR_TT = new TokenType(TokenNames.QUERY_SEPERATOR,/^;+/)
         const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
-        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|\.)/)
+        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|:|\.)/)
         const WORD_TT = new TokenType(TokenNames.WORD, startWordRegexp)
         this.tokenTypes = [
             RESERVED_WORDS_TT,
@@ -139,6 +140,7 @@ export class Tokenizer {
             COMMA_TT,
             OPEN_PARENTHESIS_TT,
             CLOSE_PARENTHESIS_TT,
+            QUERY_SEPERATOR_TT,
 
             NUMERIC_TT,
             OPERATOR_TT,

@@ -30,7 +30,7 @@ npm publish --access public .
 - [X] Get rid or sql block type !! not requred any more!
 - [ ] Parametrize whether to close subquery on new line?
 - [ ] change fomratter lists to tokenizer (find them earlier)
-- [ ] when error write the first half as they were
+- [ ] when error write the first half formatted then write out raw tokens
 - [ ] Use contexts from config
 
 # Layout Rules
@@ -38,8 +38,8 @@ npm publish --access public .
 ### general
 
 Considerations:
- - expressions should be indented
- - key words like from shouldn't be
+ - Expressions should be indented (assuming we are in a query)
+ - Key words like from shouldn't be
 
 Rules:
     - top level words start new line at current depth e.g. select from

@@ -11,9 +11,11 @@ export interface LayoutConfig {
     maxLineLength: number;
     minBlockLength: number;
     reservedWordCase: Case;
-    levelTwoNonUnique: string[];
+    levelOneUnique: string[];
     levelOneNonUnique: string[];
+    levelTwoNonUnique: string[];
     commaEnd: boolean;
+    tablePrefixs: string[]
 }
 
 export const tablePrefixs = [
@@ -22,24 +24,36 @@ export const tablePrefixs = [
     'join',
     'into',
     'table',
-  ]
+]
 
 export const DefaultLayoutConfig: LayoutConfig = {
     indent: '    ',
-    maxLineLength: 40,
-    minBlockLength: 2,
+    maxLineLength: 70,
+    minBlockLength: 20,
     reservedWordCase: Case.LOWER,
     commaEnd: true,
+    tablePrefixs: [
+        'update',
+        'from',
+        'join',
+        'into',
+        'table',
+        'as'
+    ],
     levelTwoNonUnique: [
         'or',
-        'and',
         // 'then',
         'else',
         'when',
+        'and',
+    ],
+    levelOneUnique:[
+        'select',
     ],
     levelOneNonUnique: [
+        'sum',
         'on',
-        'select',
+        'with',
         'alter',
         'cross',
         'delete',
