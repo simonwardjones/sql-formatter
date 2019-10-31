@@ -12,13 +12,13 @@ export interface State {
 }
 
 enum ContextType {
-    'INLINE', // no new line 
-    'BLOCK', // new line ended
+    INLINE = 'inline', // no new line 
+    BLOCK = 'block', // new line ended
 }
 
 export enum ContextNames {
-    PARENTHESIS_CONTEXT = 'parenthesis_context',
     SELECT_CONTEXT = 'select_context',
+    PARENTHESIS_CONTEXT = 'parenthesis_context',
     CASE_CONTEXT = 'case_context'
 }
 
@@ -45,7 +45,7 @@ export function contextFactory(name: ContextNames): Context {
             return {
                 name: ContextNames.SELECT_CONTEXT,
                 contextStart: 'select',
-                contextEnd: 'from',
+                contextEnd: ';',
                 contextDependsOnMaxLineLenght: false,
                 ContextType: ContextType.BLOCK
             }
@@ -54,7 +54,7 @@ export function contextFactory(name: ContextNames): Context {
                 name: ContextNames.CASE_CONTEXT,
                 contextStart: 'case',
                 contextEnd: 'end',
-                contextDependsOnMaxLineLenght: true,
+                contextDependsOnMaxLineLenght: false,
                 ContextType: ContextType.BLOCK
             }
     }
@@ -130,7 +130,7 @@ export class TokenFormatter {
     }
 
     updateState(token: Token, token_index: number, formattedToken: string): void {
-        // manage previousTokens
+        // manage previousTokens updates
         if (!(token.name === TokenNames.WHITESPACE)) {
             this.state.previousNonWhitespaceToken = token
             this.state.firstTokenOnLine = false
@@ -160,8 +160,18 @@ export class TokenFormatter {
             var context_for_stack = contextFactory(context.name)
             // Handle context starts
             if (token.value === context.contextStart) {
+                if (this.state.inQuery){
+                    continue
+                }
+                // first deal with errors
+                if (this.currentContext() &&
+                    this.currentContext().name === ContextNames.SELECT_CONTEXT &&
+                    context.name === ContextNames.SELECT_CONTEXT) {
+                    console.log(`WARNING - trying to open another ${context.name} without brackets`)
+                    this.error = 1
+                }
                 // first deal with blocks
-                if ((context.contextDependsOnMaxLineLenght &&
+                else if ((context.contextDependsOnMaxLineLenght &&
                     this.requiresNewLine(token_index, context)) ||
                     !context.contextDependsOnMaxLineLenght) {
                     // Add to the contextDepth, contextStack and refresh the currentLineLength
@@ -180,6 +190,7 @@ export class TokenFormatter {
             }
         }
     }
+
     closeContext(token: Token, token_index: number): void {
         for (let context of this.contexts) {
             // Handle context ends
@@ -187,16 +198,16 @@ export class TokenFormatter {
                 // handle errors in closing first
                 let closing_context = this.state.contextStack.pop()
                 if (!closing_context) {
-                    console.log(`WARNING - trying to close ${token.value} context before opening`)
+                    console.log(`WARNING - trying to close ${context.name} before opening`)
                     this.error = 1
                 } else if (context.name != closing_context.name) {
-                    console.log(`WARNING - trying to close ${token.value} context before closing ${this.currentContext()} context`)
+                    console.log(`WARNING - trying to close ${context.name} context before closing ${closing_context.name}`)
                     this.error = 1
                     // close blocks
                 } else if (!(closing_context.ContextType == ContextType.INLINE)) {
                     console.log(`Closing block context ${context.name}`)
-                    this.formattedQuery += this.newLineCurrentDepth(-1)
                     this.state.contextDepth -= 1
+                    this.formattedQuery += this.newLineCurrentDepth(0)
                     this.state.currentLineLength = this.state.contextDepth * this.config.indent.length
                     this.state.firstTokenOnLine = true
                 }
@@ -212,7 +223,6 @@ export class TokenFormatter {
         let lineLength = this.state.currentLineLength
         let level: number = 0
         let blockLength: number = 0
-        // let  = 0
         for (let lookAhead = token_index + 1; lookAhead < this.tokens.length; lookAhead++) {
             let lookAheadToken = this.tokens[lookAhead]
             if (this.tokenDemandsNewLine(lookAheadToken) ||
@@ -229,7 +239,7 @@ export class TokenFormatter {
             }
             lineLength += lookAheadToken.value.length
             blockLength += lookAheadToken.value.length
-            console.log(blockLength)
+            // console.log(blockLength)
         }
         console.log(`Warning ${context.name} not closed`)
         return true
@@ -239,7 +249,7 @@ export class TokenFormatter {
         return [
             TokenNames.ONE_LINE_COMMENT,
             TokenNames.BLOCK_COMMENT].includes(token.name) ||
-            this.config.levelOneNonUnique.includes(token.value)
+            ['select'].includes(token.value)
     }
 
     currentContext(): Context {
@@ -265,13 +275,13 @@ export class TokenFormatter {
             case TokenNames.COMMA:
                 return this.formatComma(token)
             case TokenNames.OPEN_PARENTHESIS:
-                return this.formatOpenParenthesis(token)
+                return this.formatWord(token)
             case TokenNames.CLOSE_PARENTHESIS:
                 return this.formatCloseParenthesis(token)
             case TokenNames.NUMERIC:
                 return this.formatWord(token)
             case TokenNames.OPERATOR:
-                return this.formatOperator(token)
+                return this.formatWord(token)
             case TokenNames.WORD:
                 return this.formatWord(token)
             case TokenNames.ERROR_TOKEN:
@@ -285,54 +295,46 @@ export class TokenFormatter {
     }
 
     newLineCurrentDepth(shift: number): string {
-        let indent_repeat = this.state.contextDepth + shift >= 0 ? this.state.contextDepth + shift : 0
+        let indent_repeat: number = this.state.contextDepth + shift >= 0 ? this.state.contextDepth + shift : 0
         return '\n' + this.config.indent.repeat(indent_repeat)
     }
 
     formatReservedWord(token: Token): string {
-        // 1. Level one Uniue
-        // 1.a if first on line already write with new line
-        // 1.b if not first on line create new line and write with new line
-        // 2 levelOneNonUnique
-        // 2.a write new line and token unless previous token in group e.g. inner join
-        // 2.b if already had newline before e.g. inner join just write as word
-        // 3. levelTwoNonUnique new line and indent to bottom level unless already on new line??
-        if (this.config.levelOneUnique.includes(token.value) &&
-            this.state.firstTokenOnLine) {
-            // console.log(token)
-            // 1.a
-            return token.value + this.newLineCurrentDepth(1)
-        } else if (this.config.levelOneUnique.includes(token.value)) {
-            // 1.b
-            return this.newLineCurrentDepth(0) + token.value + this.newLineCurrentDepth(1)
-        } else if (
-            !this.state.firstTokenOnLine &&
-            this.state.previousNonWhitespaceToken &&
+        if (token.value === 'when') {
+            console.log('testing_breakpoint')
+        }
+        // handle top level words
+        // They go at level -1 unless in parenthesis block
+        if (
             this.config.levelOneNonUnique.includes(token.value) &&
+            this.state.previousNonWhitespaceToken &&
             !(this.config.levelOneNonUnique.includes(this.state.previousNonWhitespaceToken.value))
         ) {
-            // 2.a
-            console.log(token)
+            if (this.currentContext() &&
+                this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT &&
+                this.currentContext().ContextType === ContextType.BLOCK) {
+                return this.newLineCurrentDepth(0) + token.value
+            }
+            else if (this.currentContext() &&
+                this.currentContext().ContextType === ContextType.INLINE) {
+                return this.formatWord(token)
+            }
+            else {
+                return this.newLineCurrentDepth(-1) + token.value
+            }
+        }
+        // handle level two words
+        else if (this.config.levelTwoNonUnique.includes(token.value) &&
+            !this.state.firstTokenOnLine &&
+            this.currentContext() &&
+            !(this.currentContext().ContextType === ContextType.INLINE)) {
             return this.newLineCurrentDepth(0) + token.value
-        } else if (
-            this.config.levelTwoNonUnique.includes(token.value) &&
-            !this.state.firstTokenOnLine) {
-            // 3
-            return this.newLineCurrentDepth(1) + token.value
-        } else {
-            // 2.b
+        }
+        else {
             return this.formatWord(token)
         }
     }
 
-    formatOperator(token: Token): string {
-        if (['*', '::'].includes(token.value)) {
-            return token.value
-        }
-        else {
-            return ' ' + token.value
-        }
-    }
     formatWord(token: Token): string {
         if (this.state.firstTokenOnLine ||
             (this.state.previousNonWhitespaceToken &&
@@ -353,39 +355,26 @@ export class TokenFormatter {
             this.state.previousNonWhitespaceToken &&
             this.state.previousNonWhitespaceToken.name === TokenNames.NUMERIC) {
             return ','
-        } else {
+        } else if (
+            this.currentContext() &&
+            this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT &&
+            this.currentContext().ContextType === ContextType.BLOCK) {
+            return this.config.commaEnd ? ',' + this.newLineCurrentDepth(1) : this.newLineCurrentDepth(1) + ','
+        }
+        else {
             return this.config.commaEnd ? ',' + this.newLineCurrentDepth(0) : this.newLineCurrentDepth(0) + ','
         }
     }
 
-    formatOpenParenthesis(token: Token): string {
-        if (this.state.firstTokenOnLine) {
-            return '('
-        } else {
-            // console.log(this.state, '|||')
-            return ' ('
-        }
+    formatCloseParenthesis(token: Token): string {
+        return ')'
     }
 
-    formatCloseParenthesis(token: Token): string {
-        // console.log(this.currentContext())
-        if (this.currentContext() &&
-            this.currentContext().ContextType === ContextType.INLINE) {
-            return ')'
-        }
-        else if (this.currentContext() &&
-            this.currentContext().ContextType === ContextType.BLOCK) {
-            return ')'
-        }
-        else {
-            return ')'
-        }
-    }
     formatComments(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
             [TokenNames.BLOCK_COMMENT, TokenNames.ONE_LINE_COMMENT].includes(
                 this.state.previousNonWhitespaceToken.name)) {
-            console.log(token)
+            // console.log(token)
             return this.newLineCurrentDepth(0) + token.value
         } else {
             return token.value

@@ -1,7 +1,7 @@
 import { Tokenizer } from './tokenizer'
 import { DefaultTokenizerConfig } from './tokenizer_config'
 import { TokenFormatter } from './layout'
-import { DefaultLayoutConfig } from './layout_config'
+import { DefaultLayoutConfig, tablePrefixs } from './layout_config'
 
 export function hello(): string {
   const world = '🦓';
@@ -16,9 +16,9 @@ function listCurrentDefaultTokens() {
 let sqlExample = `
 select 
 current_date::date, T.col1-T2.col1,
-row_number() over (partition by t2.col2,t2.col3),
+row_number() over (partition by t2.col2,t2.col3 order by tt.col3),
 count(*) as col2,
-case when t2.column > 34 then true when t2.column < 2 then false else 3 end as columnsss, 
+case when t2.column > 34 then true when t2.column < 2 and    t2.column > 0then false else 3 end as columnsss, 
 count(*) as count,
 --fsd here is a comment
 // and another -- lol
@@ -27,13 +27,22 @@ inner join database.table2 T2 on T.col1 = T2.col2
 inner join "another"."fake"."example" XST on T.col1 = XST.name
 where 1=1
 and x >= 32
-group by 1,2,3,4,5
-having count < 120 (and this)
+group by one, two, three
+having count < 120
 `
-sqlExample=`select tablename.* from (select * from tablename.tablename) table`
-sqlExample='select ((23746209837864023741-22378429387659723856)/5)'
-sqlExample=' ((234023741-22378429387659723856)/9834754723015)'
-sqlExample='select * from (select * from (select * from t.gdf) a) b where 1=1'
+// sqlExample=`select tablename.* from (select * from tablename.tablename) table`
+// sqlExample='select ((23746209837864023741-22378429387659723856)/5)'
+// sqlExample=' ((234023741-22378429387659723856)/9834754723015)'
+// sqlExample=`insert all
+// when n1 > 100 then
+//   into t1
+// when n1 > 10 then
+//   into t1
+//   into t2
+// else
+//   into t2
+// select n1 from src;`
+// sqlExample='select * from (select * from (select * from t.gdf) a) b where 1=1'
 // sqlExample=')'
 // sqlExample='select * from (select * from table where 1=1)'
 

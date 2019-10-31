@@ -11,29 +11,35 @@ export interface LayoutConfig {
     maxLineLength: number;
     minBlockLength: number;
     reservedWordCase: Case;
-    levelOneUnique: string[];
     levelTwoNonUnique: string[];
     levelOneNonUnique: string[];
     commaEnd: boolean;
 }
 
+export const tablePrefixs = [
+    'update',
+    'from',
+    'join',
+    'into',
+    'table',
+  ]
+
 export const DefaultLayoutConfig: LayoutConfig = {
     indent: '    ',
-    maxLineLength: 80,
+    maxLineLength: 40,
     minBlockLength: 2,
     reservedWordCase: Case.LOWER,
     commaEnd: true,
-    levelOneUnique: [
-        // 'select',
-    ],
     levelTwoNonUnique: [
-        'on',
-    ],
-    levelOneNonUnique: [
+        'or',
+        'and',
+        // 'then',
         'else',
         'when',
+    ],
+    levelOneNonUnique: [
+        'on',
         'select',
-        'and',
         'alter',
         'cross',
         'delete',
@@ -46,7 +52,6 @@ export const DefaultLayoutConfig: LayoutConfig = {
         'join',
         'limit',
         'left',
-        'or',
         'order',
         'outer',
         'right',
