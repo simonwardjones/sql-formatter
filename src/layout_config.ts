@@ -28,7 +28,7 @@ export const tablePrefixs = [
 
 export const DefaultLayoutConfig: LayoutConfig = {
     indent: '    ',
-    maxLineLength: 70,
+    maxLineLength: 20,
     minBlockLength: 20,
     reservedWordCase: Case.LOWER,
     commaEnd: true,
@@ -42,17 +42,17 @@ export const DefaultLayoutConfig: LayoutConfig = {
     ],
     levelTwoNonUnique: [
         'or',
-        // 'then',
+        'then',
         'else',
-        'when',
         'and',
+        'on',
     ],
     levelOneUnique:[
         'select',
     ],
     levelOneNonUnique: [
+        'when',
         'sum',
-        'on',
         'with',
         'alter',
         'cross',

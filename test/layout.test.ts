@@ -9,9 +9,7 @@ describe('initialising TokenFormatter', () => {
     tokenFormatter.formatTokens(
         [{ name: TokenNames.RESERVED_WORDS, value: 'select', length: 6 }]
     )
-    it('should have starting context global', () => {
-        expect(tokenFormatter.currentContext().name).to.equal('SELECT_CONTEXT')
-    })
+    it('should have starting context global')
 })
 
 describe('handling reserved words', () => {

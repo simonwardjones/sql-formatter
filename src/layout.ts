@@ -7,7 +7,7 @@ export interface State {
     currentLineLength: number
     firstTokenOnLine: boolean
     lastToken: boolean
-    inQuery: boolean
+    currentSelectDepth: number
     previousNonWhitespaceToken: Token | undefined
     previousReservedWordToken: Token | undefined
 }
@@ -16,6 +16,7 @@ enum ContextType {
     INLINE = 'inline', // no new line 
     BLOCK = 'block', // new line ended
     SUBQUERY = 'subquery', // similar to Block
+    CTE = 'cte'
 }
 
 export enum ContextNames {
@@ -71,7 +72,7 @@ export class TokenFormatter {
             currentLineLength: 0,
             firstTokenOnLine: true,
             lastToken: false,
-            inQuery: false,
+            currentSelectDepth: 0,
             previousNonWhitespaceToken: undefined,
             previousReservedWordToken: undefined
         }
@@ -92,7 +93,7 @@ export class TokenFormatter {
             currentLineLength: 0,
             firstTokenOnLine: true,
             lastToken: false,
-            inQuery: false,
+            currentSelectDepth: 0,
             previousNonWhitespaceToken: undefined,
             previousReservedWordToken: undefined
         }
@@ -132,17 +133,20 @@ export class TokenFormatter {
         if (token.name === TokenNames.RESERVED_WORDS) {
             this.state.previousReservedWordToken = token
         }
+
         let carryOver = this.formattedQuery.split('\n').slice(-1)[0]
         this.state.currentLineLength = carryOver.length
         if (carryOver.match(/[^ ]+/) !== null) {
-            // console.log('/', formattedToken, '/')
             this.state.firstTokenOnLine = false
         } else {
             this.state.firstTokenOnLine = true
         }
-        if (token.value === 'select' && !this.state.inQuery) {
-            this.state.inQuery = true
-            this.state.contextDepth += 1
+
+        if (token.value === 'select' && !this.state.currentSelectDepth) {
+            this.state.currentSelectDepth += 1
+            if (this.state.currentSelectDepth === 1) {
+                this.state.contextDepth += 1
+            }
         }
     }
 
@@ -161,18 +165,24 @@ export class TokenFormatter {
                     // Add to the contextDepth, contextStack and refresh the currentLineLength
                     this.state.contextDepth += 1
                     if (this.state.previousNonWhitespaceToken &&
-                        this.state.previousNonWhitespaceToken.value === 'from' &&
+                        this.state.previousNonWhitespaceToken.value === 'as' &&
+                        context_for_stack.name === ContextNames.PARENTHESIS_CONTEXT
+                    ) {
+                        context_for_stack.contextType = ContextType.CTE
+                        this.formattedQuery += this.newLineCurrentDepth(0)
+                    }
+                    else if (this.state.previousNonWhitespaceToken &&
+                        this.config.tablePrefixs.includes(this.state.previousNonWhitespaceToken.value) &&
                         context_for_stack.name === ContextNames.PARENTHESIS_CONTEXT
                     ) {
                         context_for_stack.contextType = ContextType.SUBQUERY
                         this.formattedQuery += this.newLineCurrentDepth(-1)
-                    } else {
+                    }
+                    else {
                         context_for_stack.contextType = ContextType.BLOCK
                         this.formattedQuery += this.newLineCurrentDepth(0)
                     }
                     console.log(`Opening depth ${context_for_stack.name} of type ${context_for_stack.contextType}`)
-                    this.state.currentLineLength = this.state.contextDepth * this.config.indent.length
-                    this.state.firstTokenOnLine = true
                 }
                 // deal with inline
                 else {
@@ -200,28 +210,32 @@ export class TokenFormatter {
                 }
                 // close blocks
                 else if (!(closing_context.contextType == ContextType.INLINE)) {
-                    console.log(`Closing block context ${context.name}`)
+                    console.log(`Closing block context ${closing_context.name}`)
                     this.state.contextDepth -= 1
                     if (closing_context.contextType === ContextType.BLOCK) {
                         this.formattedQuery += this.newLineCurrentDepth(0)
-                        this.state.currentLineLength = this.state.contextDepth * this.config.indent.length
                     }
-                    else {
+                    else if (closing_context.contextType === ContextType.SUBQUERY ||
+                        closing_context.contextType === ContextType.CTE
+                    ) {
                         this.formattedQuery += this.newLineCurrentDepth(-1)
                         this.state.currentLineLength = (this.state.contextDepth - 1) * this.config.indent.length
+                        this.state.currentSelectDepth -= 1
+                        if (this.state.currentSelectDepth === 0) {
+                            this.state.contextDepth -= 1
+                        }
                     }
                     this.state.firstTokenOnLine = true
-                    if (!this.currentContext ||
-                        (closing_context &&
-                            closing_context.contextType === ContextType.SUBQUERY)) {
-                        this.state.inQuery = false
-                    }
                 }
                 // close inline blocks
                 else if (token.value === context.contextEnd) {
                     console.log(`Closing inline block`)
                 }
             }
+        }
+        if (token.name === TokenNames.QUERY_SEPERATOR) {
+            this.state.currentSelectDepth -= 1
+            this.state.contextDepth -= 1
         }
     }
 
@@ -315,8 +329,8 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'select') {
-            console.log('testing_breakpoint')
+        if (token.value === 'on') {
+            console.log('testing')
         }
         if (this.currentContext() &&
             this.currentContext().contextType === ContextType.INLINE) {
@@ -327,15 +341,23 @@ export class TokenFormatter {
         if (this.config.levelOneUnique.includes(token.value) &&
             this.state.previousNonWhitespaceToken &&
             this.state.previousNonWhitespaceToken.name === TokenNames.CLOSE_PARENTHESIS) {
-            return '\n' + this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
+            // new line after cte
+            return '\n' + this.newLineCurrentDepth(0) + token.value + this.newLineCurrentDepth(1)
         }
         else if (this.config.levelOneUnique.includes(token.value) &&
-            this.state.firstTokenOnLine) {
+            this.state.currentSelectDepth === 0) {
+            // first select
+            return token.value + this.newLineCurrentDepth(1)
+        }
+        else if (this.config.levelOneUnique.includes(token.value) &&
+            this.state.currentSelectDepth !== 0) {
+            // sub query  select
             return token.value + this.newLineCurrentDepth(0)
         }
         else if (this.config.levelOneUnique.includes(token.value)) {
-            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
+            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(1)
         }
+        // level one non unique
         if (
             this.config.levelOneNonUnique.includes(token.value) &&
             this.state.previousNonWhitespaceToken &&
@@ -343,7 +365,8 @@ export class TokenFormatter {
         ) {
             if (this.currentContext() &&
                 this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT &&
-                this.currentContext().contextType === ContextType.BLOCK) {
+                this.currentContext().contextType === ContextType.BLOCK &&
+                !this.state.firstTokenOnLine) {
                 return this.newLineCurrentDepth(0) + token.value
             }
             else if (this.currentContext() &&
@@ -360,8 +383,9 @@ export class TokenFormatter {
         // handle level two words
         else if (this.config.levelTwoNonUnique.includes(token.value) &&
             !this.state.firstTokenOnLine &&
-            this.currentContext() &&
-            !(this.currentContext().contextType === ContextType.INLINE)) {
+            ((this.currentContext() &&
+                !(this.currentContext().contextType === ContextType.INLINE)
+            ) || !this.currentContext())) {
             return this.newLineCurrentDepth(0) + token.value
         }
         else {
@@ -389,17 +413,12 @@ export class TokenFormatter {
             this.state.previousNonWhitespaceToken &&
             this.state.previousNonWhitespaceToken.name === TokenNames.NUMERIC) {
             return ','
-        } else if (
-            this.currentContext() &&
-            this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT &&
-            this.currentContext().contextType === ContextType.BLOCK) {
-            return this.config.commaEnd ? ',' + this.newLineCurrentDepth(0) : this.newLineCurrentDepth(0) + ','
         }
-        else if (!this.state.inQuery) {
-            return this.config.commaEnd ? ',' + '\n' + this.newLineCurrentDepth(-1) : '\n' + this.newLineCurrentDepth(-1) + ','
+        else if (this.state.currentSelectDepth !== 0) {
+            return this.config.commaEnd ? ',' + this.newLineCurrentDepth(0) : this.newLineCurrentDepth(0) + ','
         }
         else {
-            return this.config.commaEnd ? ',' + this.newLineCurrentDepth(0) : this.newLineCurrentDepth(0) + ','
+            return this.config.commaEnd ? ',' + '\n' + this.newLineCurrentDepth(0) : '\n' + this.newLineCurrentDepth(0) + ','
         }
     }
 
@@ -424,7 +443,7 @@ export class TokenFormatter {
                 this.state.previousNonWhitespaceToken.name) ||
             token.name === TokenNames.BLOCK_COMMENT) {
             // console.log(token)
-            return this.newLineCurrentDepth(-1) + token.value
+            return this.newLineCurrentDepth(0) + token.value
         } else {
             return token.value
         }

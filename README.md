@@ -28,6 +28,7 @@ npm publish --access public .
 - [X] ~Use function of contexts for context depth~ N/A context depth not equal to contextStack lenght (inline contexts)
 - [X] Check word breaks after regexp e.g. `selectselect` (added test case)
 - [X] Get rid or sql block type !! not requred any more!
+- [ ] Fix when for case statement!
 - [ ] Parametrize whether to close subquery on new line?
 - [ ] change fomratter lists to tokenizer (find them earlier)
 - [ ] when error write the first half formatted then write out raw tokens
