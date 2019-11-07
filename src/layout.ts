@@ -329,7 +329,7 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'on') {
+        if (token.value === 'when') {
             console.log('testing')
         }
         if (this.currentContext() &&
@@ -341,13 +341,13 @@ export class TokenFormatter {
         if (this.config.levelOneUnique.includes(token.value) &&
             this.state.previousNonWhitespaceToken &&
             this.state.previousNonWhitespaceToken.name === TokenNames.CLOSE_PARENTHESIS) {
-            // new line after cte
+            // two new lines after cte
             return '\n' + this.newLineCurrentDepth(0) + token.value + this.newLineCurrentDepth(1)
         }
         else if (this.config.levelOneUnique.includes(token.value) &&
             this.state.currentSelectDepth === 0) {
             // first select
-            return token.value + this.newLineCurrentDepth(1)
+            return this.formatWord(token) + this.newLineCurrentDepth(1)
         }
         else if (this.config.levelOneUnique.includes(token.value) &&
             this.state.currentSelectDepth !== 0) {
@@ -364,7 +364,6 @@ export class TokenFormatter {
             !(this.config.levelOneNonUnique.includes(this.state.previousNonWhitespaceToken.value))
         ) {
             if (this.currentContext() &&
-                this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT &&
                 this.currentContext().contextType === ContextType.BLOCK &&
                 !this.state.firstTokenOnLine) {
                 return this.newLineCurrentDepth(0) + token.value
@@ -390,17 +389,6 @@ export class TokenFormatter {
         }
         else {
             return this.formatWord(token)
-        }
-    }
-
-    formatWord(token: Token): string {
-        if (this.state.firstTokenOnLine ||
-            (this.state.previousNonWhitespaceToken &&
-                ['(', '::', ':'].includes(this.state.previousNonWhitespaceToken.value))) {
-            return token.value
-        }
-        else {
-            return ' ' + token.value
         }
     }
 
@@ -466,5 +454,15 @@ export class TokenFormatter {
         }
     }
 
+    formatWord(token: Token): string {
+        if (this.state.firstTokenOnLine ||
+            (this.state.previousNonWhitespaceToken &&
+                ['(', '::', ':'].includes(this.state.previousNonWhitespaceToken.value))) {
+            return token.value
+        }
+        else {
+            return ' ' + token.value
+        }
+    }
 }
 
