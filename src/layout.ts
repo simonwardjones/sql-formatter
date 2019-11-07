@@ -329,63 +329,88 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'when') {
+        if (token.value === 'then') {
             console.log('testing')
         }
         if (this.currentContext() &&
             this.currentContext().contextType === ContextType.INLINE) {
             return this.formatWord(token)
         }
-        // handle top level words
-        // They go at level -1 unless in parenthesis block
-        if (this.config.levelOneUnique.includes(token.value) &&
-            this.state.previousNonWhitespaceToken &&
+
+        if (this.config.levelOneUnique.includes(token.value)) {
+            return this.formatLevelOneUnique(token)
+        }
+        else if (this.config.levelOneNonUnique.includes(token.value)) {
+            return this.formatLevelOneNonUnique(token)
+        }
+        else if (this.config.levelTwoNonUnique.includes(token.value)) {
+            return this.formatLevelTwoNonUnique(token)
+        }
+        else {
+            return this.formatWord(token)
+        }
+    }
+
+    formatLevelOneUnique(token: Token) {
+        // handle top level words select!
+        // They go at level 0 with a following indent
+        // two new lines after close bracket e.g. cte
+        if (this.state.previousNonWhitespaceToken &&
             this.state.previousNonWhitespaceToken.name === TokenNames.CLOSE_PARENTHESIS) {
-            // two new lines after cte
             return '\n' + this.newLineCurrentDepth(0) + token.value + this.newLineCurrentDepth(1)
-        }
-        else if (this.config.levelOneUnique.includes(token.value) &&
-            this.state.currentSelectDepth === 0) {
-            // first select
-            return this.formatWord(token) + this.newLineCurrentDepth(1)
-        }
-        else if (this.config.levelOneUnique.includes(token.value) &&
-            this.state.currentSelectDepth !== 0) {
-            // sub query  select
+        } // not in select statement and first token in line
+        else if (this.state.currentSelectDepth === 0 && this.state.firstTokenOnLine) {
+            return token.value + this.newLineCurrentDepth(1)
+        } // aleady on new line and in select statement e.g. select in sub query
+        else if (this.state.currentSelectDepth !== 0 && this.state.firstTokenOnLine) {
             return token.value + this.newLineCurrentDepth(0)
+        } else {
+            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
         }
-        else if (this.config.levelOneUnique.includes(token.value)) {
-            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(1)
+    }
+
+    formatLevelOneNonUnique(token: Token) {
+        // handle the first occurence of level one non unique
+        if (this.state.firstTokenOnLine) {
+            return this.formatWord(token)
         }
-        // level one non unique
-        if (
-            this.config.levelOneNonUnique.includes(token.value) &&
-            this.state.previousNonWhitespaceToken &&
+        if (this.state.previousNonWhitespaceToken &&
             !(this.config.levelOneNonUnique.includes(this.state.previousNonWhitespaceToken.value))
-        ) {
+        ) { //  when in case context
             if (this.currentContext() &&
-                this.currentContext().contextType === ContextType.BLOCK &&
-                !this.state.firstTokenOnLine) {
+                this.currentContext().name === ContextNames.CASE_CONTEXT) {
                 return this.newLineCurrentDepth(0) + token.value
             }
-            else if (this.currentContext() &&
-                this.currentContext().contextType === ContextType.INLINE) {
-                return this.formatWord(token)
-            }
-            else if (this.state.firstTokenOnLine) {
-                return token.value
-            }
-            else {
+            // in statement e.g from or inner join
+            if (this.state.currentSelectDepth > 0) {
                 return this.newLineCurrentDepth(-1) + token.value
+            } // e.g. first select if select non unique
+            else {
+                return this.newLineCurrentDepth(0) + token.value
             }
         }
-        // handle level two words
-        else if (this.config.levelTwoNonUnique.includes(token.value) &&
-            !this.state.firstTokenOnLine &&
-            ((this.currentContext() &&
-                !(this.currentContext().contextType === ContextType.INLINE)
-            ) || !this.currentContext())) {
-            return this.newLineCurrentDepth(0) + token.value
+        else {
+            return this.formatWord(token)
+        }
+    }
+
+    formatLevelTwoNonUnique(token: Token) {
+        // handle the first occurence of level one non unique
+        if (this.state.firstTokenOnLine) {
+            return this.formatWord(token)
+        }
+        if (this.state.previousNonWhitespaceToken &&
+            !(this.config.levelOneNonUnique.includes(this.state.previousNonWhitespaceToken.value))
+        ) { // e.g. then in case
+            if (this.currentContext() &&
+                this.currentContext().name === ContextNames.CASE_CONTEXT) {
+                return this.newLineCurrentDepth(1) + token.value
+            }
+            if (this.state.currentSelectDepth > 0) {
+                return this.newLineCurrentDepth(-1) + token.value
+            } else {
+                return this.newLineCurrentDepth(0) + token.value
+            }
         }
         else {
             return this.formatWord(token)
