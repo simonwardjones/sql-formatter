@@ -7,8 +7,8 @@ export enum Case {
 }
 
 export interface LayoutConfig {
-    indent: string;
     maxLineLength: number;
+    indent: string;
     minBlockLength: number;
     reservedWordCase: Case;
     levelOneUnique: string[];
@@ -27,8 +27,8 @@ export const tablePrefixs = [
 ]
 
 export const DefaultLayoutConfig: LayoutConfig = {
-    indent: '    ',
     maxLineLength: 20,
+    indent: '    ',
     minBlockLength: 20,
     reservedWordCase: Case.LOWER,
     commaEnd: true,
