@@ -30,6 +30,7 @@ npm publish --access public .
 - [X] Get rid or sql block type !! not requred any more!
 - [X] Fix when for case statement!
 - [ ] change formatter lists to tokenizer (find them earlier, or at least handle in seperate functions)
+- [ ] Fix or/and in BLOCK
 - [ ] when error write the first half formatted then write out raw tokens
 - [ ] Use contexts from config
 - [ ] temporarily set the context to inline when clculating line length
