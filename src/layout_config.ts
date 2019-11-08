@@ -27,7 +27,7 @@ export const tablePrefixs = [
 ]
 
 export const DefaultLayoutConfig: LayoutConfig = {
-    maxLineLength: 20,
+    maxLineLength: 200,
     indent: '    ',
     minBlockLength: 20,
     reservedWordCase: Case.LOWER,

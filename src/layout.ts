@@ -246,6 +246,7 @@ export class TokenFormatter {
         let blockLength: number = 0
         for (let lookAhead = token_index; lookAhead < this.tokens.length; lookAhead++) {
             let lookAheadToken = this.tokens[lookAhead]
+            lookAheadToken.value = lookAheadToken.value.toLowerCase()
             if (lookAheadToken.name === TokenNames.WHITESPACE) {
                 continue
             } else {
@@ -329,7 +330,7 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'then') {
+        if (token.value === 'when') {
             console.log('testing')
         }
         if (this.currentContext() &&
