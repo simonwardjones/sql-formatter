@@ -389,7 +389,7 @@ export class TokenFormatter {
             else {
                 return this.newLineCurrentDepth(0) + token.value
             }
-        }
+        } // second levelOneNonUnique e.g. inner join
         else {
             return this.formatWord(token)
         }
@@ -468,7 +468,7 @@ export class TokenFormatter {
     }
 
     formatOperator(token: Token): string {
-        if (['/', '*'].includes(token.value) &&
+        if (['/'].includes(token.value) &&
             this.state.currentLineLength > this.config.maxLineLength) {
             return ' ' + token.value + this.newLineCurrentDepth(0)
         }
