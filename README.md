@@ -36,6 +36,7 @@ npm publish --access public .
 - [ ] temporarily set the context to inline when clculating line length
 - [ ] fix the case to only be on tokens that are allowed to change e.g. not strings
 - [ ] Lots of test cases!
+- [ ] Move functions to config for open parenthesis layout
 
 # Layout Rules
 

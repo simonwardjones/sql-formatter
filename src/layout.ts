@@ -442,9 +442,10 @@ export class TokenFormatter {
 
     formatOpenParenthesis(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
-            ['count', 'sum', 'coalesce', 'min', 'timestamp_ntz', 'max', 'row_number', 'array_size'].includes(
-                this.state.previousNonWhitespaceToken.value
-            )) {
+            ['count', 'sum', 'coalesce', 'min', 'timestamp_ntz',
+                'max', 'row_number', 'array_size', 'datediff'].includes(
+                    this.state.previousNonWhitespaceToken.value
+                )) {
             return '('
         } else {
             return this.formatWord(token)
