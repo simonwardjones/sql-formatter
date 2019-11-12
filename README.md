@@ -27,18 +27,18 @@ npm publish --access public .
 - [X] Add to npm `@simonwardjones/sql-formatter`
 - [X] ~Use function of contexts for context depth~ N/A context depth not equal to contextStack lenght (inline contexts)
 - [X] Check word breaks after regexp e.g. `selectselect` (added test case)
-- [X] Get rid or sql block type !! not requred any more!
+- [X] Get rid or sql block type - not requred any more!
 - [X] Fix when for case statement!
-- [X] handle in key word levels in different functions
+- [X] Handle in key word levels in different functions
 - [X] Fix or/and in BLOCK
-- [X] when error write the first half formatted then write out raw tokens
+- [X] When error write the first half formatted then write out raw tokens
+- [ ] Move all examples from demo to test cases
 - [ ] Use contexts from config
-- [ ] temporarily set the context to inline when clculating line length
-- [ ] fix the case to only be on tokens that are allowed to change e.g. not strings
-- [ ] Lots of test cases!
+- [ ] Temporarily set the context to inline when clculating line length
+- [ ] Fix the case to only be on tokens that are allowed to change e.g. not strings
 - [ ] Move functions to config for open parenthesis layout
 - [ ] Enable capitalisation of alias
-- [ ] Implement Key word cases
+- [ ] Implement key word cases
 
 # Layout Rules
 
