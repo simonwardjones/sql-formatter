@@ -37,6 +37,8 @@ npm publish --access public .
 - [ ] fix the case to only be on tokens that are allowed to change e.g. not strings
 - [ ] Lots of test cases!
 - [ ] Move functions to config for open parenthesis layout
+- [ ] Enable capitalisation of alias
+- [ ] Implement Key word cases
 
 # Layout Rules
 
