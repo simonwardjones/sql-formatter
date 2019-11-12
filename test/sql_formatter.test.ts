@@ -19,13 +19,13 @@ describe.only('test sqlFormatter', () => {
         const result = sqlFormatter.format(query)
         // console.log(result)
         const expected = "select\n" +
-        "    t.column1,\n" +
-        "    t.column2\n" +
-        "from (\n" +
-        "    select\n" +
-        "        *\n" +
-        "    from schema . table\n" +
-        ") t"
+            "    t.column1,\n" +
+            "    t.column2\n" +
+            "from (\n" +
+            "    select\n" +
+            "        *\n" +
+            "    from schema . table\n" +
+            ") t"
         expect(result).to.equal(expected)
     })
     it('should format "and" and "or" within block parenthesis context', () => {
@@ -47,14 +47,28 @@ describe.only('test sqlFormatter', () => {
             ")"
         expect(result).to.equal(expected)
     })
-    it('should write the first half formatted then write out raw tokens when erroring', () => {
+    it('should write the first half formatted then write out raw tokens when erroring in tokenizer', () => {
         const sqlFormatter = new SqlFormatter()
-        const query = 'select * from schema.table'
+        const query = 'select * from (select \\ from schema.table)'
         const result = sqlFormatter.format(query)
         // console.log(result)
         const expected = "select\n" +
             "    *\n" +
-            "from schema . table"
-        expect(result).to.equal(expected)
+            "from (\n" +
+            "    select\n" +
+            "        \\ from schema.table)"
+            expect(result).to.equal(expected)
+    })
+    it('should write the first half formatted then write out raw tokens when erroring in formatter', () => {
+        const sqlFormatter = new SqlFormatter()
+        const query = 'select * from (select end from schema.table)'
+        const result = sqlFormatter.format(query)
+        // console.log(result)
+        const expected = "select\n" +
+            "    *\n" +
+            "from (\n" +
+            "    select\n" +
+            "        end from schema.table)"
+            expect(result).to.equal(expected)
     })
 })

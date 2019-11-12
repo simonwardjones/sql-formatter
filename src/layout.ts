@@ -114,7 +114,8 @@ export class TokenFormatter {
             this.updateState(token)
             if (this.error) {
                 console.log('Error encountered writing tokens without formating')
-                return this.tokens.map(token => token.value).join('')
+                return this.formattedQuery +
+                    this.tokens.slice(token_index + 1).map(token => token.value).join('')
             }
         }
         return this.formattedQuery.trim()
@@ -443,7 +444,7 @@ export class TokenFormatter {
     formatOpenParenthesis(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
             ['count', 'sum', 'coalesce', 'min', 'timestamp_ntz',
-                'max', 'row_number', 'array_size', 'datediff','dateadd'].includes(
+                'max', 'row_number', 'array_size', 'datediff', 'dateadd'].includes(
                     this.state.previousNonWhitespaceToken.value
                 )) {
             return '('
