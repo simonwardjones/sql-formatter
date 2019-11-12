@@ -457,9 +457,9 @@ export class TokenFormatter {
                 this.state.previousNonWhitespaceToken.name) ||
             token.name === TokenNames.BLOCK_COMMENT) {
             // console.log(token)
-            return this.newLineCurrentDepth(0) + token.value
+            return this.newLineCurrentDepth(0) + token.value + this.newLineCurrentDepth(0)
         } else {
-            return token.value
+            return token.value + this.newLineCurrentDepth(0)
         }
     }
 
