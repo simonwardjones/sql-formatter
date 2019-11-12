@@ -408,7 +408,7 @@ export class TokenFormatter {
                 return this.newLineCurrentDepth(1) + token.value
             }
             if (this.state.currentSelectDepth > 0) {
-                return this.newLineCurrentDepth(-1) + token.value
+                return this.newLineCurrentDepth(0) + token.value
             } else {
                 return this.newLineCurrentDepth(0) + token.value
             }
@@ -443,7 +443,7 @@ export class TokenFormatter {
     formatOpenParenthesis(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
             ['count', 'sum', 'coalesce', 'min', 'timestamp_ntz',
-                'max', 'row_number', 'array_size', 'datediff'].includes(
+                'max', 'row_number', 'array_size', 'datediff','dateadd'].includes(
                     this.state.previousNonWhitespaceToken.value
                 )) {
             return '('
