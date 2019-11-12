@@ -158,7 +158,7 @@ export class Tokenizer {
             input = this.eatToken(input)
             // console.log('input now: !' + input + '!')
         }
-        console.log('Eaten all the input')
+        // console.log('Eaten all the input')
         return this.tokens
     }
 

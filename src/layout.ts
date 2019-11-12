@@ -182,7 +182,7 @@ export class TokenFormatter {
                         context_for_stack.contextType = ContextType.BLOCK
                         this.formattedQuery += this.newLineCurrentDepth(0)
                     }
-                    console.log(`Opening depth ${context_for_stack.name} of type ${context_for_stack.contextType}`)
+                    // console.log(`Opening depth ${context_for_stack.name} of type ${context_for_stack.contextType}`)
                 }
                 // deal with inline
                 else {
@@ -210,7 +210,7 @@ export class TokenFormatter {
                 }
                 // close blocks
                 else if (!(closing_context.contextType == ContextType.INLINE)) {
-                    console.log(`Closing block context ${closing_context.name}`)
+                    // console.log(`Closing block context ${closing_context.name}`)
                     this.state.contextDepth -= 1
                     if (closing_context.contextType === ContextType.BLOCK) {
                         this.formattedQuery += this.newLineCurrentDepth(0)
@@ -229,7 +229,7 @@ export class TokenFormatter {
                 }
                 // close inline blocks
                 else if (token.value === context.contextEnd) {
-                    console.log(`Closing inline block`)
+                    // console.log(`Closing inline block`)
                 }
             }
         }
@@ -240,7 +240,7 @@ export class TokenFormatter {
     }
 
     requiresNewLine(token_index: number, context: Context): boolean {
-        console.log(`looking ahead for conext ${context.name} to see if it fits on one line`)
+        // console.log(`looking ahead for conext ${context.name} to see if it fits on one line`)
         let lineLength = this.state.currentLineLength
         let level: number = 0
         let blockLength: number = 0

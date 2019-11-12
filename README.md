@@ -29,9 +29,9 @@ npm publish --access public .
 - [X] Check word breaks after regexp e.g. `selectselect` (added test case)
 - [X] Get rid or sql block type !! not requred any more!
 - [X] Fix when for case statement!
-- [ ] change formatter lists to tokenizer (find them earlier, or at least handle in seperate functions)
-- [ ] Fix or/and in BLOCK
-- [ ] when error write the first half formatted then write out raw tokens
+- [X] handle in key word levels in different functions
+- [X] Fix or/and in BLOCK
+- [X] when error write the first half formatted then write out raw tokens
 - [ ] Use contexts from config
 - [ ] temporarily set the context to inline when clculating line length
 - [ ] fix the case to only be on tokens that are allowed to change e.g. not strings

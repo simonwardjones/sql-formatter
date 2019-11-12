@@ -5,7 +5,7 @@ import { DefaultLayoutConfig } from './layout_config'
 
 export class SqlFormatter {
     tokenizer = new Tokenizer(DefaultTokenizerConfig)
-    tokenFormatter  = new TokenFormatter(DefaultLayoutConfig)
+    tokenFormatter = new TokenFormatter(DefaultLayoutConfig)
     format(query: string) {
         let tokens = this.tokenizer.tokenize(query)
         return this.tokenFormatter.formatTokens(tokens)
