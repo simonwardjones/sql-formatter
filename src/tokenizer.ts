@@ -130,7 +130,7 @@ export class Tokenizer {
         const CLOSE_PARENTHESIS_TT = new TokenType(TokenNames.CLOSE_PARENTHESIS, /^\)/)
         const QUERY_SEPERATOR_TT = new TokenType(TokenNames.QUERY_SEPERATOR,/^;+/)
         const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
-        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|=|!=|<>|>|>=|<|<=|::|:|\|\||\.)/)
+        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|!=|<>|>=|<=|=>|::|:|\|\||\.|=|>|<)/)
         const WORD_TT = new TokenType(TokenNames.WORD, startWordRegexp)
         this.tokenTypes = [
             RESERVED_WORDS_TT,
