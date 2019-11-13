@@ -12,7 +12,7 @@ npm install @simonwardjones/sql-formatter
 
 ```javascript
 var sql = require('@simonwardjones/sql-formatter');
-tokenizer = new sql.Tokenizer(sql.DefaultTokenizerConfig)
+tokenizer = new sql.Tokenizer()
 console.log(tokenizer.tokenize('select * from schema.table'))
 ```
 

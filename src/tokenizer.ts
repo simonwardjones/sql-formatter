@@ -1,5 +1,5 @@
 import escapeRegExp from 'lodash/escapeRegExp';
-import { StringType, TokenizerConfig } from './tokenizer_config';
+import { DefaultTokenizerConfig, StringType, TokenizerConfig } from './tokenizer_config';
 
 export interface Token {
     name: TokenNames;
@@ -111,16 +111,18 @@ export function getStringsRegexp(StringTypes: StringType[]): RegExp {
 }
 
 export class Tokenizer {
+    config: TokenizerConfig
     tokenTypes: TokenType[]
     tokens: Token[]
     error: number
 
-    constructor(config: TokenizerConfig) {
+    constructor(config?: TokenizerConfig) {
+        this.config = Object.assign({}, DefaultTokenizerConfig, config);
         // Define the token types
-        const RESERVED_WORDS_TT = new TokenType(TokenNames.RESERVED_WORDS, regexpFromWords(config.RESERVED_WORDS))
-        const STRING_TT = new TokenType(TokenNames.STRING, getStringsRegexp(config.STRING_TYPES))
+        const RESERVED_WORDS_TT = new TokenType(TokenNames.RESERVED_WORDS, regexpFromWords(this.config.RESERVED_WORDS))
+        const STRING_TT = new TokenType(TokenNames.STRING, getStringsRegexp(this.config.STRING_TYPES))
         const BLOCK_COMMENT = new TokenType(TokenNames.BLOCK_COMMENT, /^\/\*[\s\S]*\*\//)
-        const ONE_LINE_COMMENT_TT = new TokenType(TokenNames.ONE_LINE_COMMENT, oneLineComments(config.ONE_LINE_COMMENT_SYMBOLS))
+        const ONE_LINE_COMMENT_TT = new TokenType(TokenNames.ONE_LINE_COMMENT, oneLineComments(this.config.ONE_LINE_COMMENT_SYMBOLS))
         const IDENTIFIER_TT = new TokenType(TokenNames.IDENTIFIER, identifierRegexp)
         const WHITESPACE_TT = new TokenType(TokenNames.WHITESPACE, /^\s+/)
         const COMMA_TT = new TokenType(TokenNames.COMMA, /^,/)

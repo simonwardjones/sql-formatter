@@ -1,4 +1,4 @@
-import { LayoutConfig } from './layout_config'
+import { LayoutConfig, DefaultLayoutConfig } from './layout_config'
 import { Token, TokenNames } from './tokenizer'
 
 export interface State {
@@ -62,10 +62,10 @@ export class TokenFormatter {
     contexts: Context[]
     error: number
 
-    constructor(config: LayoutConfig) {
+    constructor(config?: LayoutConfig) {
         this.error = 0
         this.tokens = []
-        this.config = config
+        this.config = Object.assign({}, DefaultLayoutConfig, config);
         this.state = {
             contextStack: [],
             contextDepth: 0,
@@ -187,7 +187,7 @@ export class TokenFormatter {
                 }
                 // deal with inline
                 else {
-                    console.log(`Opening inline ${context.name}`)
+                    // console.log(`Opening inline ${context.name}`)
                     context_for_stack.contextType = ContextType.INLINE
                 }
                 this.state.contextStack.push(context_for_stack)
