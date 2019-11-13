@@ -106,7 +106,14 @@ export class TokenFormatter {
                 this.state.lastToken = true
             }
             const token = this.tokens[token_index]
-            token.value = token.value.toLowerCase() // case handeled when writing token
+            if (!([
+                TokenNames.BLOCK_COMMENT,
+                TokenNames.ERROR_TOKEN,
+                TokenNames.ONE_LINE_COMMENT,
+                TokenNames.STRING
+            ].includes(token.name))) {
+                token.value = token.value.toLowerCase() // case handeled when writing token
+            }
             this.closeContext(token, token_index)
             const formattedToken = this.formatToken(token)
             this.formattedQuery += formattedToken

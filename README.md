@@ -32,6 +32,7 @@ npm publish --access public .
 - [X] Handle in key word levels in different functions
 - [X] Fix or/and in BLOCK
 - [X] When error write the first half formatted then write out raw tokens
+- [X] Don't lower comments or strings
 - [ ] Move all examples from demo to test cases
 - [ ] Use contexts from config
 - [ ] Temporarily set the context to inline when clculating line length
