@@ -41,6 +41,7 @@ export const DefaultLayoutConfig: LayoutConfig = {
         'as'
     ],
     levelTwoNonUnique: [
+        'create',
         'or',
         'then',
         'and',

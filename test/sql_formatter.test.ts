@@ -131,4 +131,23 @@ describe('test sqlFormatter', () => {
             "    on sq1.one = sq2.two"
         expect(result).to.equal(expected)
     })
+
+    it('should format mulktiple nested queries', () => {
+        const sqlFormatter = new SqlFormatter()
+        const query = 'select * from (select * from (select * from t.gdf) a) b where 1=1'
+        const result = sqlFormatter.format(query)
+        const expected = "select\n" +
+            "    *\n" +
+            "from (\n" +
+            "    select\n" +
+            "        *\n" +
+            "    from (\n" +
+            "        select\n" +
+            "            *\n" +
+            "        from t.gdf\n" +
+            "    ) a\n" +
+            ") b\n" +
+            "where 1 = 1"
+        expect(result).to.equal(expected)
+    })
 })

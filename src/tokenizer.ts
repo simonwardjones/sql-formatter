@@ -58,7 +58,7 @@ export const startWordRegexp = /^[\w_][\w$_0-9]*/i
 export const identifierQuotedRegexpPart = getStringRegexp({ start: '"', end: '"' })
 export const identifierDotRegexpPart = new RegExp(
     '(' + identifierQuotedRegexpPart.source + '|' + wordRegexp.source + ')' +
-    '(\\s*\\.\\s*(' + identifierQuotedRegexpPart.source + '|' + wordRegexp.source + '))+',
+    '(\\s*\\.\\s*(' + identifierQuotedRegexpPart.source + '|' + wordRegexp.source + '|\\*))+',
     'i')
 export const identifierRegexp = new RegExp(
     '^(' + identifierDotRegexpPart.source + '|' + identifierQuotedRegexpPart.source + ')'

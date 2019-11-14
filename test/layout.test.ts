@@ -20,7 +20,6 @@ describe('handling reserved words', () => {
             { name: TokenNames.RESERVED_WORDS, value: 'select', length: 6 }]
         const tokenFormatter = new TokenFormatter(DefaultLayoutConfig)
         const result = tokenFormatter.formatTokens(tokens)
-        console.log(result)
         expect(result).to.equal(expected)
     })
 })

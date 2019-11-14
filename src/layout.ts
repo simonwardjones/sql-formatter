@@ -338,14 +338,13 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'when') {
+        if (token.value === 'select') {
             console.log('testing')
         }
         if (this.currentContext() &&
             this.currentContext().contextType === ContextType.INLINE) {
             return this.formatWord(token)
         }
-
         if (this.config.levelOneUnique.includes(token.value)) {
             return this.formatLevelOneUnique(token)
         }
@@ -374,7 +373,7 @@ export class TokenFormatter {
         else if (this.state.currentSelectDepth !== 0 && this.state.firstTokenOnLine) {
             return token.value + this.newLineCurrentDepth(0)
         } else {
-            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
+            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(1)
         }
     }
 
@@ -409,16 +408,18 @@ export class TokenFormatter {
             return this.formatWord(token)
         }
         if (this.state.previousNonWhitespaceToken &&
-            !(this.config.levelOneNonUnique.includes(this.state.previousNonWhitespaceToken.value))
+            !(this.config.levelTwoNonUnique.includes(this.state.previousNonWhitespaceToken.value))
         ) { // e.g. then in case
             if (this.currentContext() &&
                 this.currentContext().name === ContextNames.CASE_CONTEXT) {
                 return this.newLineCurrentDepth(1) + token.value
             }
-            if (this.state.currentSelectDepth > 0) {
+            if (this.state.currentSelectDepth > 0 || 
+                (this.currentContext() &&
+                this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT)) {
                 return this.newLineCurrentDepth(0) + token.value
             } else {
-                return this.newLineCurrentDepth(0) + token.value
+                return this.newLineCurrentDepth(1) + token.value
             }
         }
         else {
@@ -463,12 +464,13 @@ export class TokenFormatter {
     formatComments(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
             [TokenNames.BLOCK_COMMENT, TokenNames.ONE_LINE_COMMENT].includes(
-                this.state.previousNonWhitespaceToken.name) ||
+                this.state.previousNonWhitespaceToken.name) && 
+                !this.state.firstTokenOnLine ||
             token.name === TokenNames.BLOCK_COMMENT) {
             // console.log(token)
-            return this.newLineCurrentDepth(0) + token.value + this.newLineCurrentDepth(0)
+            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
         } else {
-            return token.value + this.newLineCurrentDepth(0)
+            return token.value + this.newLineCurrentDepth(-1)
         }
     }
 
