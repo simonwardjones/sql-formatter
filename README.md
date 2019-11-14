@@ -33,7 +33,7 @@ npm publish --access public .
 - [X] Fix or/and in BLOCK
 - [X] When error write the first half formatted then write out raw tokens
 - [X] Don't lower comments or strings
-- [ ] Move all examples from demo to test cases
+- [X] Move all examples from demo to test cases
 - [ ] Use contexts from config
 - [ ] Temporarily set the context to inline when clculating line length
 - [ ] Fix the case to only be on tokens that are allowed to change e.g. not strings
