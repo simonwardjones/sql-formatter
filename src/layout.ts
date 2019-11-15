@@ -454,7 +454,7 @@ export class TokenFormatter {
             [
                 'count', 'sum', 'coalesce', 'min', 'timestamp_ntz',
                 'max', 'row_number', 'array_size', 'datediff', 'dateadd',
-                'parse_json', 'haversine', 'check_json'].includes(
+                'parse_json', 'haversine', 'check_json', 'replace'].includes(
                     this.state.previousNonWhitespaceToken.value
                 )) {
             return '('
