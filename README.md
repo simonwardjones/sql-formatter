@@ -34,7 +34,7 @@ npm publish --access public .
 - [X] When error write the first half formatted then write out raw tokens
 - [X] Don't lower comments or strings
 - [X] Move all examples from demo to test cases
-- [ ] Use contexts from config
+- [X] ~Use contexts from config~ Can't think why I said that
 - [ ] Temporarily set the context to inline when clculating line length
 - [ ] Fix the case to only be on tokens that are allowed to change e.g. not strings
 - [ ] Move functions to config for open parenthesis layout
