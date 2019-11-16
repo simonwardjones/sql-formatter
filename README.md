@@ -35,7 +35,7 @@ npm publish --access public .
 - [X] Don't lower comments or strings
 - [X] Move all examples from demo to test cases
 - [X] ~Use contexts from config~ Can't think why I said that
-- [ ] Temporarily set the context to inline when clculating line length
+- [X] Calculate the exact line length
 - [ ] Fix the case to only be on tokens that are allowed to change e.g. not strings
 - [ ] Move functions to config for open parenthesis layout
 - [ ] Enable capitalisation of alias

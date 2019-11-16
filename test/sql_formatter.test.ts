@@ -74,7 +74,8 @@ describe('test sqlFormatter', () => {
 
     it('should format case statement as inline block if less than max line length', () => {
         const sqlFormatter = new SqlFormatter()
-        const query = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end "
+        sqlFormatter.tokenFormatter.config.maxLineLength = 67
+        const query = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end"
         const result = sqlFormatter.format(query)
         const expected = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end"
         expect(result).to.equal(expected)
@@ -82,8 +83,8 @@ describe('test sqlFormatter', () => {
 
     it('should format case statement as block if more than max line length', () => {
         const sqlFormatter = new SqlFormatter()
-        sqlFormatter.tokenFormatter.config.maxLineLength = 5
-        const query = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end "
+        sqlFormatter.tokenFormatter.config.maxLineLength = 66
+        const query = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end"
         const result = sqlFormatter.format(query)
         const expected = "case\n" +
             "    when 1 = 1\n" +
@@ -97,15 +98,15 @@ describe('test sqlFormatter', () => {
 
     it('should format case statement as inline if more than max line length but less than min block', () => {
         const sqlFormatter = new SqlFormatter()
-        sqlFormatter.tokenFormatter.config.maxLineLength = 5
+        sqlFormatter.tokenFormatter.config.maxLineLength = 66
         sqlFormatter.tokenFormatter.config.minBlockLength = 100
-        const query = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end "
+        const query = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end"
         const result = sqlFormatter.format(query)
         const expected = "case when 1 = 1 then 'likely' when 1 = 2 then 'unlikely' else 0 end"
         expect(result).to.equal(expected)
     })
 
-    it('should format multile ctes with empty line between', () => {
+    it('should format multiple ctes with empty line between', () => {
         const sqlFormatter = new SqlFormatter()
         const query = `with sub_query1 as (select  one, two  from db.schema.table1 ),
         sub_query2 as (select three, four,five from db.schema.table1)
@@ -132,7 +133,7 @@ describe('test sqlFormatter', () => {
         expect(result).to.equal(expected)
     })
 
-    it('should format mulktiple nested queries', () => {
+    it('should format multiple nested queries', () => {
         const sqlFormatter = new SqlFormatter()
         const query = 'select * from (select * from (select * from t.gdf) a) b where 1=1'
         const result = sqlFormatter.format(query)

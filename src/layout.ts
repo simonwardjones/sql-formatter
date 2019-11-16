@@ -258,10 +258,12 @@ export class TokenFormatter {
             if (lookAheadToken.name === TokenNames.WHITESPACE) {
                 continue
             } else {
-                lineLength += lookAheadToken.value.length + 1 // allowing 1 for whitespace
-                blockLength += lookAheadToken.value.length + 1
+                let formattedToken = this.formatToken(lookAheadToken)
+                lineLength += formattedToken.length // allowing 1 for whitespace
+                blockLength += formattedToken.length
+                this.state.firstTokenOnLine = false
+                // console.log(lineLength, formattedToken)
             }
-
             if (this.tokenDemandsNewLine(lookAheadToken) ||
                 (lineLength > this.config.maxLineLength &&
                     blockLength > this.config.minBlockLength)) {
