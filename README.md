@@ -39,6 +39,8 @@ npm publish --access public .
 - [X] Move functions to config for open parenthesis layout
 - [ ] Enable capitalisation of alias
 - [ ] Implement key word cases
+- [ ] parametrise some things and, on, nl after from or select
+- [ ] Update comments and README with detail on logic and rules
 
 # Layout Rules
 
