@@ -36,7 +36,7 @@ npm publish --access public .
 - [X] Move all examples from demo to test cases
 - [X] ~Use contexts from config~ Can't think why I said that
 - [X] Calculate the exact line length
-- [ ] Move functions to config for open parenthesis layout
+- [X] Move functions to config for open parenthesis layout
 - [ ] Enable capitalisation of alias
 - [ ] Implement key word cases
 

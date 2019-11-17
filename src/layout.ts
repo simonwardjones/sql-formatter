@@ -416,9 +416,9 @@ export class TokenFormatter {
                 this.currentContext().name === ContextNames.CASE_CONTEXT) {
                 return this.newLineCurrentDepth(1) + token.value
             }
-            if (this.state.currentSelectDepth > 0 || 
+            if (this.state.currentSelectDepth > 0 ||
                 (this.currentContext() &&
-                this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT)) {
+                    this.currentContext().name === ContextNames.PARENTHESIS_CONTEXT)) {
                 return this.newLineCurrentDepth(0) + token.value
             } else {
                 return this.newLineCurrentDepth(1) + token.value
@@ -453,12 +453,7 @@ export class TokenFormatter {
 
     formatOpenParenthesis(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
-            [
-                'count', 'sum', 'coalesce', 'min', 'timestamp_ntz',
-                'max', 'row_number', 'array_size', 'datediff', 'dateadd',
-                'parse_json', 'haversine', 'check_json', 'replace'].includes(
-                    this.state.previousNonWhitespaceToken.value
-                )) {
+            this.config.functions.includes(this.state.previousNonWhitespaceToken.value)) {
             return '('
         } else {
             return this.formatWord(token)
@@ -468,8 +463,8 @@ export class TokenFormatter {
     formatComments(token: Token): string {
         if (this.state.previousNonWhitespaceToken &&
             [TokenNames.BLOCK_COMMENT, TokenNames.ONE_LINE_COMMENT].includes(
-                this.state.previousNonWhitespaceToken.name) && 
-                !this.state.firstTokenOnLine ||
+                this.state.previousNonWhitespaceToken.name) &&
+            !this.state.firstTokenOnLine ||
             token.name === TokenNames.BLOCK_COMMENT) {
             // console.log(token)
             return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
