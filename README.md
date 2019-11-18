@@ -37,6 +37,9 @@ npm publish --access public .
 - [X] ~Use contexts from config~ Can't think why I said that
 - [X] Calculate the exact line length
 - [X] Move functions to config for open parenthesis layout
+- [X] improve numeric
+- [X] add dot symbol (then identifiers are words/string identifiers before or after dots or after from/join/table)
+- [ ] change identifier to just string identifiers and fix tests
 - [ ] Enable capitalisation of alias
 - [ ] Implement key word cases
 - [ ] parametrise some things and, on, nl after from or select

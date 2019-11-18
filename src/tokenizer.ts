@@ -1,5 +1,6 @@
 import escapeRegExp from 'lodash/escapeRegExp';
 import { DefaultTokenizerConfig, StringType, TokenizerConfig } from './tokenizer_config';
+import { TokenFormatter } from './layout';
 
 export interface Token {
     name: TokenNames;
@@ -12,13 +13,14 @@ export enum TokenNames {
     STRING = 'string',
     BLOCK_COMMENT = 'block_comment',
     ONE_LINE_COMMENT = 'one_line_comment',
-    IDENTIFIER = 'identifier',
     WHITESPACE = 'whitespace',
     COMMA = 'comma',
     OPEN_PARENTHESIS = 'open_parenthesis',
     CLOSE_PARENTHESIS = 'close_parenthesis',
     QUERY_SEPERATOR = 'query_seperator',
     NUMERIC = 'numeric',
+    DOT= 'dot',
+    IDENTIFIER = 'identifier',
     OPERATOR = 'operator',
     WORD = 'word',
     ERROR_TOKEN = 'error_token'
@@ -129,6 +131,7 @@ export class Tokenizer {
         const CLOSE_PARENTHESIS_TT = new TokenType(TokenNames.CLOSE_PARENTHESIS, /^\)/)
         const QUERY_SEPERATOR_TT = new TokenType(TokenNames.QUERY_SEPERATOR,/^;+/)
         const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
+        const DOT_TT = new TokenType(TokenNames.DOT,/^\./)
         const IDENTIFIER_TT = new TokenType(TokenNames.IDENTIFIER, identifierRegexp)
         const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|!=|<>|>=|<=|=>|::|:|\|\||\.|=|>|<)/)
         const WORD_TT = new TokenType(TokenNames.WORD, startWordRegexp)
@@ -143,6 +146,7 @@ export class Tokenizer {
             CLOSE_PARENTHESIS_TT,
             QUERY_SEPERATOR_TT,
             NUMERIC_TT,
+            DOT_TT,
             IDENTIFIER_TT,
             OPERATOR_TT,
             WORD_TT]

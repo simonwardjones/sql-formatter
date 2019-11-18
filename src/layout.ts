@@ -317,8 +317,6 @@ export class TokenFormatter {
                 return this.formatComments(token)
             case TokenNames.IDENTIFIER:
                 return this.formatWord(token)
-            case TokenNames.IDENTIFIER:
-                return this.formatWord(token)
             case TokenNames.WHITESPACE:
                 return ''
             case TokenNames.COMMA:
@@ -330,6 +328,10 @@ export class TokenFormatter {
             case TokenNames.QUERY_SEPERATOR:
                 return this.formatQuerySeperator(token)
             case TokenNames.NUMERIC:
+                return this.formatWord(token)
+            case TokenNames.DOT:
+                return '.'
+            case TokenNames.IDENTIFIER:
                 return this.formatWord(token)
             case TokenNames.OPERATOR:
                 return this.formatOperator(token)
@@ -504,7 +506,7 @@ export class TokenFormatter {
     formatWord(token: Token): string {
         if (this.state.firstTokenOnLine ||
             (this.state.previousNonWhitespaceToken &&
-                ['(', '::', ':'].includes(this.state.previousNonWhitespaceToken.value))) {
+                ['(', '::', ':', '.'].includes(this.state.previousNonWhitespaceToken.value))) {
             return token.value
         }
         else {

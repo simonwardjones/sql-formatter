@@ -5,17 +5,17 @@ import { SqlFormatter } from '../src/sql_formatter';
 describe('test sqlFormatter', () => {
     it('should format miniaml select * query', () => {
         const sqlFormatter = new SqlFormatter()
-        const query = 'select * from schema.table'
+        const query = 'select * from schema_example.table1'
         const result = sqlFormatter.format(query)
         const expected = "select\n" +
             "    *\n" +
-            "from schema . table"
+            "from schema_example.table1"
         expect(result).to.equal(expected)
     })
 
     it('should format minimal nested select * query', () => {
         const sqlFormatter = new SqlFormatter()
-        const query = 'select T.column1, T.column2 from (select * from schema.table) T'
+        const query = 'select T.column1, T.column2 from (select * from schema_example.table1) T'
         const result = sqlFormatter.format(query)
         const expected = "select\n" +
             "    t.column1,\n" +
@@ -23,7 +23,7 @@ describe('test sqlFormatter', () => {
             "from (\n" +
             "    select\n" +
             "        *\n" +
-            "    from schema . table\n" +
+            "    from schema_example.table1\n" +
             ") t"
         expect(result).to.equal(expected)
     })
