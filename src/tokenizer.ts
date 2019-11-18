@@ -52,7 +52,7 @@ export function oneLineComments(starters: string[]) {
     return new RegExp('^(' + starters.join('|') + ').*', 'i')
 }
 
-export const numericRegexp = /^\d+\.?\d*([eE][+-]?\d+)?/
+export const numericRegexp = /^(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/
 export const wordRegexp = /[\w_][\w$_0-9]*/i
 export const startWordRegexp = /^[\w_][\w$_0-9]*/i
 export const identifierQuotedRegexpPart = getStringRegexp({ start: '"', end: '"' })
@@ -123,13 +123,13 @@ export class Tokenizer {
         const STRING_TT = new TokenType(TokenNames.STRING, getStringsRegexp(this.config.STRING_TYPES))
         const BLOCK_COMMENT = new TokenType(TokenNames.BLOCK_COMMENT, /^\/\*[\s\S]*\*\//)
         const ONE_LINE_COMMENT_TT = new TokenType(TokenNames.ONE_LINE_COMMENT, oneLineComments(this.config.ONE_LINE_COMMENT_SYMBOLS))
-        const IDENTIFIER_TT = new TokenType(TokenNames.IDENTIFIER, identifierRegexp)
         const WHITESPACE_TT = new TokenType(TokenNames.WHITESPACE, /^\s+/)
         const COMMA_TT = new TokenType(TokenNames.COMMA, /^,/)
         const OPEN_PARENTHESIS_TT = new TokenType(TokenNames.OPEN_PARENTHESIS, /^\(/)
         const CLOSE_PARENTHESIS_TT = new TokenType(TokenNames.CLOSE_PARENTHESIS, /^\)/)
         const QUERY_SEPERATOR_TT = new TokenType(TokenNames.QUERY_SEPERATOR,/^;+/)
         const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
+        const IDENTIFIER_TT = new TokenType(TokenNames.IDENTIFIER, identifierRegexp)
         const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|!=|<>|>=|<=|=>|::|:|\|\||\.|=|>|<)/)
         const WORD_TT = new TokenType(TokenNames.WORD, startWordRegexp)
         this.tokenTypes = [
@@ -137,14 +137,13 @@ export class Tokenizer {
             STRING_TT,
             BLOCK_COMMENT,
             ONE_LINE_COMMENT_TT,
-            IDENTIFIER_TT,
             WHITESPACE_TT,
             COMMA_TT,
             OPEN_PARENTHESIS_TT,
             CLOSE_PARENTHESIS_TT,
             QUERY_SEPERATOR_TT,
-
             NUMERIC_TT,
+            IDENTIFIER_TT,
             OPERATOR_TT,
             WORD_TT]
         this.tokens = []

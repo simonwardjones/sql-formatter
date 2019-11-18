@@ -99,6 +99,17 @@ export class TokenFormatter {
         }
     }
 
+    // findAliases(tokens: Token[]): void {
+    //     let previousTokenTablePrefix = false
+    //     let awaitingAs = false
+    //     for (let token_index = 0; token_index < this.tokens.length; token_index++) {
+    //         const token = this.tokens[token_index]
+    //         if (['from', 'join'].includes(token.value.toLowerCase())) {
+    //             previousTokenTablePrefix = true
+    //         }
+    //     }
+    // }
+
     formatTokens(tokens: Token[]): string {
         this.tokens = tokens // placing on class for convenience
         for (let token_index = 0; token_index < this.tokens.length; token_index++) {

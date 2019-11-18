@@ -32,7 +32,7 @@ export const DefaultLayoutConfig: LayoutConfig = {
     indent: '    ',
     minBlockLength: 20,
     reservedWordCase: Case.LOWER,
-    commaEnd: false,
+    commaEnd: true,
     tablePrefixs: [
         'update',
         'from',
@@ -42,7 +42,6 @@ export const DefaultLayoutConfig: LayoutConfig = {
         'as'
     ],
     levelTwoNonUnique: [
-        'create',
         'or',
         'then',
         'and',
@@ -55,6 +54,7 @@ export const DefaultLayoutConfig: LayoutConfig = {
         'else',
         'from',
         'with',
+        'create',
         'when',
         'sum',
         'alter',
