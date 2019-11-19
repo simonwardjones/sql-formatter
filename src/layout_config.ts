@@ -19,14 +19,6 @@ export interface LayoutConfig {
     tablePrefixs: string[]
 }
 
-export const tablePrefixs = [
-    'update',
-    'from',
-    'join',
-    'into',
-    'table',
-]
-
 export const DefaultLayoutConfig: LayoutConfig = {
     maxLineLength: 120,
     indent: '    ',
@@ -35,11 +27,13 @@ export const DefaultLayoutConfig: LayoutConfig = {
     commaEnd: true,
     tablePrefixs: [
         'update',
+        'exists',
         'from',
         'join',
         'into',
         'table',
-        'as'
+        'as',
+        // 'in'
     ],
     levelTwoNonUnique: [
         'or',

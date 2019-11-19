@@ -161,7 +161,7 @@ export class TokenFormatter {
             this.state.firstTokenOnLine = true
         }
 
-        if (token.value === 'select' && !this.state.currentSelectDepth) {
+        if (token.value === 'select') {
             this.state.currentSelectDepth += 1
             if (this.state.currentSelectDepth === 1) {
                 this.state.contextDepth += 1
@@ -190,8 +190,8 @@ export class TokenFormatter {
                         context_for_stack.contextType = ContextType.CTE
                         this.formattedQuery += this.newLineCurrentDepth(0)
                     }
-                    else if (this.state.previousNonWhitespaceToken &&
-                        this.config.tablePrefixs.includes(this.state.previousNonWhitespaceToken.value) &&
+                    else if (this.tokens[token_index+1] 
+                        && ['select','with'].includes(this.tokens[token_index+1].value) &&
                         context_for_stack.name === ContextNames.PARENTHESIS_CONTEXT
                     ) {
                         context_for_stack.contextType = ContextType.SUBQUERY
@@ -253,8 +253,8 @@ export class TokenFormatter {
             }
         }
         if (token.name === TokenNames.QUERY_SEPERATOR) {
-            this.state.currentSelectDepth -= 1
-            this.state.contextDepth -= 1
+            this.state.currentSelectDepth = 0
+            this.state.contextDepth = 0
         }
     }
 
@@ -353,7 +353,7 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'select') {
+        if (token.value === 'and') {
             console.log('testing')
         }
         if (this.currentContext() &&
@@ -388,7 +388,7 @@ export class TokenFormatter {
         else if (this.state.currentSelectDepth !== 0 && this.state.firstTokenOnLine) {
             return token.value + this.newLineCurrentDepth(0)
         } else {
-            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(1)
+            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
         }
     }
 
