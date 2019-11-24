@@ -151,4 +151,19 @@ describe('test sqlFormatter', () => {
             "where 1 = 1"
         expect(result).to.equal(expected)
     })
+
+    it('should format a union all correctly', () => {
+        const sqlFormatter = new SqlFormatter()
+        const query = 'select * from schema_exaple.table_example union all select * from schema_exaple.table_example_2'
+        const result = sqlFormatter.format(query)
+        const expected = "select\n" +
+            "    *\n" +
+            "from schema_exaple.table_example\n" +
+            "union all\n" +
+            "select\n" +
+            "    *\n" +
+            "from schema_exaple.table_example_2"
+        expect(result).to.equal(expected)
+
+    })
 })

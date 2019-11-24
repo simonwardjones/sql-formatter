@@ -39,7 +39,7 @@ npm publish --access public .
 - [X] Move functions to config for open parenthesis layout
 - [X] improve numeric
 - [X] add dot symbol (then identifiers are words/string identifiers before or after dots or after from/join/table)
-- [ ] test and fix set operators impact on select depth (should - 1)
+- [X] test and fix set operators impact on select depth (should - 1)
 - [ ] change identifier to just string identifiers and fix tests
 - [ ] Enable capitalisation of alias
 - [ ] Implement key word cases

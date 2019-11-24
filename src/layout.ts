@@ -190,8 +190,8 @@ export class TokenFormatter {
                         context_for_stack.contextType = ContextType.CTE
                         this.formattedQuery += this.newLineCurrentDepth(0)
                     }
-                    else if (this.tokens[token_index+1] 
-                        && ['select','with'].includes(this.tokens[token_index+1].value) &&
+                    else if (this.tokens[token_index + 1]
+                        && ['select', 'with'].includes(this.tokens[token_index + 1].value) &&
                         context_for_stack.name === ContextNames.PARENTHESIS_CONTEXT
                     ) {
                         context_for_stack.contextType = ContextType.SUBQUERY
@@ -250,6 +250,12 @@ export class TokenFormatter {
                 else if (token.value === context.contextEnd) {
                     // console.log(`Closing inline block`)
                 }
+            }
+        }
+        if (['intersect', 'minus', 'except', 'union'].includes(token.value)) {
+            this.state.currentSelectDepth -= 1
+            if (this.state.currentSelectDepth === 0) {
+                this.state.contextDepth -= 1
             }
         }
         if (token.name === TokenNames.QUERY_SEPERATOR) {
@@ -353,7 +359,7 @@ export class TokenFormatter {
     }
 
     formatReservedWord(token: Token): string {
-        if (token.value === 'and') {
+        if (token.value === 'select') {
             console.log('testing')
         }
         if (this.currentContext() &&
@@ -388,7 +394,7 @@ export class TokenFormatter {
         else if (this.state.currentSelectDepth !== 0 && this.state.firstTokenOnLine) {
             return token.value + this.newLineCurrentDepth(0)
         } else {
-            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(0)
+            return this.newLineCurrentDepth(-1) + token.value + this.newLineCurrentDepth(1)
         }
     }
 

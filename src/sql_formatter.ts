@@ -3,6 +3,7 @@ import { Tokenizer } from './tokenizer'
 
 
 export class SqlFormatter {
+    // helper class to tokenize and format
     tokenizer = new Tokenizer()
     tokenFormatter = new TokenFormatter()
     format(query: string) {
