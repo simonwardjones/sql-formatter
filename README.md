@@ -45,6 +45,7 @@ npm publish --access public .
 - [ ] Implement key word cases
 - [ ] parametrise some things and, on, nl after from or select
 - [ ] Update comments and README with detail on logic and rules
+- [ ] fix bug with expression after comment in select blovk
 
 # Layout Rules
 

@@ -57,6 +57,7 @@ export const DefaultLayoutConfig: LayoutConfig = {
         'group',
         'having',
         'inner',
+        'outer',
         'insert',
         'intersect',
         'join',
