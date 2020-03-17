@@ -17,7 +17,7 @@ console.log(tokenizer.tokenize('select * from schema.table'))
 ```
 
 # Publish
-> note this and install calls prepare from scripts
+> note this install calls prepare from scripts
 
 ```bash
 npm publish --access public .
@@ -83,3 +83,13 @@ Considerations:
 
 Rules
  - If first newLineReservedWord just write
+
+
+### Tokenizer Logic
+
+ - The tokenizer has tokenTypes (a list of TokenTypes) and an empty token list
+ - The method Tokenizer.tokenize takes in a string and then repeatedly calls the Tokenizer.eatToken until all the string is tokenized or no token can be found
+    - Tokenizer.eatToken loops through the tokenTypes in order trying to match patterns by calling TokenType.eatToken, if a token is found the Tokenizer.eatToken method appends the token to the Tokenizer.tokens and returns the rest of the string
+    - TokenType.eatToken just returns the string and a token if there is one
+ - Tokenizer.tokenize finally returns the list of tokens
+ - If an error takes place i.e. no token matches the error token is returned (the rest of the string)
