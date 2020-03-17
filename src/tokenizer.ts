@@ -133,7 +133,7 @@ export class Tokenizer {
         const NUMERIC_TT = new TokenType(TokenNames.NUMERIC, numericRegexp)
         const DOT_TT = new TokenType(TokenNames.DOT,/^\./)
         const IDENTIFIER_TT = new TokenType(TokenNames.IDENTIFIER, identifierRegexp)
-        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|!=|<>|>=|<=|=>|::|:|\|\||\.|=|>|<)/)
+        const OPERATOR_TT = new TokenType(TokenNames.OPERATOR, /^(\+|\-|\*|\/|%|!=|<>|>=|<=|=>|::|:|\|\||=|>|<)/)
         const WORD_TT = new TokenType(TokenNames.WORD, startWordRegexp)
         this.tokenTypes = [
             RESERVED_WORDS_TT,
