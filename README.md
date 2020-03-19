@@ -93,3 +93,7 @@ Rules
     - TokenType.eatToken just returns the string and a token if there is one
  - Tokenizer.tokenize finally returns the list of tokens
  - If an error takes place i.e. no token matches the error token is returned (the rest of the string)
+
+### Layout logic
+
+ - 
